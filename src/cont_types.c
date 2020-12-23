@@ -49,6 +49,11 @@ void matrix_zero(matrix_double_t *matrix){
   for (i = 0; i < matrix->numRows*matrix->numCols; i++) matrix->pData[i] = 0.0;
 }
 
+void matrix_copy(matrix_double_t *Amat, matrix_double_t *Bmat){
+  int i;
+  for (i = 0; i < Amat->numRows*Amat->numCols; i++) Bmat->pData[i] = Amat->pData[i];
+}
+
 void matrix_identity(matrix_double_t *matrix){
   int i;
   matrix_zero(matrix);

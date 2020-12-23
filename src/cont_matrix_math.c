@@ -45,6 +45,19 @@ extern void dposv_(
   int* ldb,
   int* info
 );
+
+/* load dsyev as an external function from LAPACK */
+extern void dsyev_(
+  char* jobz,
+  char* uplo,
+  int* n,
+  double* a,
+  int* lda,
+  double* w,
+  double* work,
+  int* lwork,
+  int* info
+);
 #endif
 
 int matrix_double_addition(
@@ -244,7 +257,7 @@ int matrix_double_solve_posdef(
     &info
   );
 #else
-  TRACE(5,("The PSD linear system solver has not het been implemented dependency free", info));
+  TRACE(5,("The PSD linear system solver has not yet been implemented dependency free", info));
 #endif
 
   if (0 == info){
@@ -252,6 +265,76 @@ int matrix_double_solve_posdef(
   } else {
     if (0 < info) TRACE(5,("The %i-th argument in dposv had an illegal value\n", -info));
     if (0 > info) TRACE(5,("The leading minor of order %i is not positive definite\n", info));
+    return 0;
+  }
+}
+
+int matrix_double_symmetric_real_eigenvalues(
+  matrix_double_t *Amat,
+  matrix_double_t *eigVals
+){
+  int info, lwork;
+  double* work;
+  double wkopt;
+  matrix_double_t tmpm;
+
+  /* Check that the input dimensionlity is correct */
+  if ((Amat->numRows != Amat->numCols) ||
+      (eigVals->numRows != Amat->numCols) ||
+      (eigVals->numCols != 1)) {
+    TRACE(5,("Input dimensionality error\n"));
+    return 0;
+  }
+  /* Check that the matrix is symmetric
+  if (0 == isSymmetric(Amat)) return 0;*/
+
+  matrix_allocate(&tmpm, Amat->numRows, Amat->numCols);
+  matrix_copy(Amat, &tmpm);
+
+  /* Query and allocate the optimal workspace */
+  lwork = -1;
+  dsyev_(
+      "N",
+      "L",
+      &tmpm.numCols,
+      tmpm.pData,
+      &tmpm.numCols,
+      eigVals->pData,
+      &wkopt,
+      &lwork,
+      &info
+    );
+
+  lwork = (int)wkopt;
+  if (0 >= lwork) {
+    TRACE(5,("Could not compute the optimal work size\n"));
+    return 0;
+  }
+  assert(lwork > 0);
+
+  work  = (double*)malloc( lwork*sizeof(double) );
+
+  /* Solve eigenproblem */
+  dsyev_(
+    "N",
+    "L",
+    &tmpm.numCols,
+    tmpm.pData,
+    &tmpm.numCols,
+    eigVals->pData,
+    work,
+    &lwork,
+    &info
+  );
+
+  free(work);
+  free(tmpm.pData);
+
+  if (0 == info){
+    return 1;
+  } else {
+    if (0 < info) TRACE(5,("The %i-th argument in dposv had an illegal value\n", -info));
+    if (0 > info) TRACE(5,("The the algorithm failed to converge; %i off-diagonal elements of an intermediate tridiagonal form did not converge to zero\n", info));
     return 0;
   }
 }
@@ -282,3 +365,6 @@ void mat_chol_inplace(matrix_double_t *Amat)
 
 void mat_sol(matrix_double_t *Amat, matrix_double_t *Bmat)
 { assert(1 == matrix_double_solve_posdef(Amat, Bmat)); }
+
+void mat_eigvals(matrix_double_t *Amat, matrix_double_t *Bmat)
+{ assert(1 == matrix_double_symmetric_real_eigenvalues(Amat, Bmat)); }

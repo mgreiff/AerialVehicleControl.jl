@@ -68,6 +68,14 @@ int matrix_double_solve_posdef(
   matrix_double_t *Bmat
 );
 
+/***************************************************************************//**
+* @brief Compute, without changing A, the eigenvalues of a real symmetric A to B
+*******************************************************************************/
+int matrix_double_symmetric_real_eigenvalues(
+  matrix_double_t *Amat,
+  matrix_double_t *Bmat
+);
+
 /*******************************************************************************
 * External handles for the various operations, raising assertions and calling
 * whatever library that is linked in - if any
@@ -81,5 +89,6 @@ void mat_trans(matrix_double_t *Amat, matrix_double_t *ATmat);
 void mat_chol(matrix_double_t *Amat, matrix_double_t *Lmat);
 void mat_chol_inplace(matrix_double_t *Amat);
 void mat_sol(matrix_double_t *Amat, matrix_double_t *Bmat);
+void mat_eigvals(matrix_double_t *Amat, matrix_double_t *Bmat);
 
 #endif /* __CONT_MATRIX_MATH_H__ */

@@ -121,6 +121,6 @@ void matrix_zero( matrix_double_t *matrix );
 void matrix_identity( matrix_double_t *matrix );
 void matrix_allocate( matrix_double_t *matrix, int numRows, int numCols );
 void matrix_define( matrix_double_t *matrix, int numRows, int numCols, double *data );
-
+void matrix_copy(matrix_double_t *Amat, matrix_double_t *Bmat);
 
 #endif /* __CONT_TYPES_H__ */
