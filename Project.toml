@@ -1,0 +1,11 @@
+name = "AerialVehicleControl"
+uuid = "15774e33-001e-4203-9cd7-3f031fb6b0b1"
+authors = ["mgreiff <marcus.greiff@control.lth.se>"]
+version = "0.1.0"
+
+[deps]
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
