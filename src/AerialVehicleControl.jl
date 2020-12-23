@@ -1,3 +1,8 @@
+"""
+Copyright Marcus Greiff 2020
+
+The Aerial Vehicle Control package
+"""
 module AerialVehicleControl
 
 export @verbose,
