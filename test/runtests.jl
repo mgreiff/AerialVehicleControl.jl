@@ -29,6 +29,7 @@ runAllTests = true # If defined, will not recompile the C-code
         include("matrix_math/test_matrix_addition.jl")
         include("matrix_math/test_matrix_cholesky_inplace.jl")
         include("matrix_math/test_matrix_cholesky.jl")
+        include("matrix_math/test_matrix_eigvals.jl")
         include("matrix_math/test_matrix_multiplication.jl")
         include("matrix_math/test_matrix_solve_posdef.jl")
         include("matrix_math/test_matrix_subtraction_inplace.jl")
