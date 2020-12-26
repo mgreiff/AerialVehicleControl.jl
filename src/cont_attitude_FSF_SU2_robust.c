@@ -5,9 +5,9 @@
 * @author Marcus Greiff
 * @date June 2020
 *******************************************************************************/
-#include "cont_attitude_FSF_SU2_continuous.h"
+#include "cont_attitude_FSF_SU2_robust.h"
 
-int update_attitude_FSF_SU2_continuous(
+int update_attitude_FSF_SU2_robust(
   ref_state_qw_t * reference,
   dyn_state_qw_t * state,
   con_state_qw_fsf_t * controller

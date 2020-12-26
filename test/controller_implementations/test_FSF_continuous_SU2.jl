@@ -26,7 +26,7 @@ function fixture()
     S = dyn_state_qw_t(hcat(q), hcat(w))
 
     J  = rand(3,3); J  = J + J'; J  = J + I*maximum(abs.(eigvals(J)));
-    kR, kc, kw = 1.0, 1.0, 1.0;
+    kR, kc, kw = 1.0, 0.1, 1.0;
     a, b, c, d = 1.0, 2.0, 3.0, 4.0;
     C  = con_state_qw_fsf_t(J, kR, kc, kw, a, b, c, d);
 

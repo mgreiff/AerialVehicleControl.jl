@@ -18,6 +18,9 @@ int update_attitude_FSF_SU2_discontinuous(
   matrix_double_t tmp31Am, tmp31Bm, tmp31Cm;
   matrix_double_t Jm, Sm, Rrm, Rm;
 
+  /* Assert controller tuning feasibility */
+  if (0 == assert_attitude_FSF_SU2(controller)) return 0;
+
   matrix_allocate(&Xem,  4, 1);
   matrix_allocate(&XeCm, 4, 1);
   matrix_allocate(&eXm,  3, 1);
@@ -94,7 +97,7 @@ int update_attitude_FSF_SU2_discontinuous(
     controller->dist_lyapunov  = controller->gain_kR *(2.0 - controller->dist_Gamma);
     controller->dist_lyapunov -= controller->gain_kc * cont_dot_product(&eXm, &ewm);
   }
-  controller->dist_lyapunov +=                 0.5 * cont_dot_product(&ewm, &tmp31Am);
+  controller->dist_lyapunov   +=                 0.5 * cont_dot_product(&ewm, &tmp31Am);
 
   /* Free allocated memory */
   free(Xem.pData);
@@ -111,75 +114,5 @@ int update_attitude_FSF_SU2_discontinuous(
   free(Sm.pData);
   free(Rm.pData);
   free(Rrm.pData);
-  return 1;
-}
-
-int assert_attitude_FSF_SU2_discontinuous(
-  con_state_qw_fsf_t * controller,
-  matrix_double_t * M1m,
-  matrix_double_t * M2m,
-  matrix_double_t * Wm
-){
-  double maxJ, minJ, minVal, temp, numtol = 0.000000001;
-  double kR = controller->gain_kR, kc = controller->gain_kc;
-  double kw = controller->gain_kw, phi = 1.0;
-  matrix_double_t Jm, Em;
-
-  matrix_define(&Jm,  3, 3, controller->inertia);
-  matrix_allocate(&Em,  3, 1);
-
-  /* TODO: Check for symmetry */
-  if ((numtol < abs(matrix_get(&Jm, 0, 1) - matrix_get(&Jm, 1, 0))) ||
-      (numtol < abs(matrix_get(&Jm, 0, 2) - matrix_get(&Jm, 2, 0))) ||
-      (numtol < abs(matrix_get(&Jm, 1, 2) - matrix_get(&Jm, 2, 1)))) {
-    TRACE(5, ("The inertia matrix must be symmetric\n"));
-    return 0;
-  }
-  /* TODO: Compute the maximum and minimum eigenvalues of the inertia matrix */
-  mat_eigvals(&Jm, &Em);
-  minJ = Em.pData[0];
-  maxJ = Em.pData[2];
-
-  if (numtol > minJ){
-    TRACE(5, ("The inertia matrix must be positive definite\n"));
-    return 0;
-  }
-  if ((0 <= phi) || (2 >= phi)){
-    TRACE(5, ("The initial attitude error is not on the interval (0,2)\n"));
-    return 0;
-  }
-  if ((kR <= 0) || (kc <= 0) || (kw <= 0)){
-    TRACE(5, ("The controller parameters must be positive\n"));
-    return 0;
-  }
-  minVal = 4.0 * kw;
-  temp   = 2.0 * sqrt(kw * minJ);
-  if (temp < minVal) minVal = temp;
-  temp   = 4.0 * kw * kR * minJ * minJ / (maxJ * kw * kw + minJ * minJ * kR);
-  if (temp < minVal) minVal = temp;
-  if (kc  > temp){
-    TRACE(5, ("The controller parameters do not result in a feasible controller\n"));
-    return 0;
-  }
-
-  /* Equation 10a */
-  matrix_set(Wm, 0, 0, +kc * kR / maxJ);
-  matrix_set(Wm, 0, 1, -kc * kw / minJ / 2.0);
-  matrix_set(Wm, 1, 0, -kc * kw / minJ / 2.0);
-  matrix_set(Wm, 1, 1, +kw - kc / 4.0);
-
-  /* Equation 10b */
-  matrix_set(M1m, 0, 0, 2.0 * kR );
-  matrix_set(M1m, 0, 1, -kc / 2.0);
-  matrix_set(M1m, 1, 0, -kc / 2.0);
-  matrix_set(M1m, 1, 1, minJ / 2.0);
-
-  /* Equation 10c */
-  matrix_set(M2m, 0, 0, 4.0 * kR / (2.0 - phi));
-  matrix_set(M2m, 0, 1, kc / 2.0);
-  matrix_set(M2m, 1, 0, kc / 2.0);
-  matrix_set(M2m, 1, 1, maxJ / 2.0);
-
-  free(Em.pData);
   return 1;
 }

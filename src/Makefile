@@ -20,6 +20,7 @@ $(info Compiling: Using no external  libreries...)
 endif
 
 _DEPS  = cont_types.h cont_math.h cont_main.h cont_matrix_math.h
+_DEPS += cont_attitude_utils.h
 _DEPS += cont_attitude_FSF_SO3_continuous.h
 _DEPS += cont_attitude_FSF_SU2_continuous.h
 _DEPS += cont_attitude_FSF_SU2_discontinuous.h
@@ -29,6 +30,7 @@ _DEPS += cont_attitude_reference_generator.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 _OBJ  = cont_types.o cont_math.o cont_main.o cont_matrix_math.o
+_OBJ += cont_attitude_utils.o
 _OBJ += cont_attitude_FSF_SO3_continuous.o
 _OBJ += cont_attitude_FSF_SU2_continuous.o
 _OBJ += cont_attitude_FSF_SU2_discontinuous.o

@@ -133,3 +133,64 @@ function rand_PSD(N)
     J  = rand(N,N); J  = J + J'; J  = J + I*maximum(abs.(eigvals(J)));
     return J;
 end
+
+function maximal_feasible_kc_SU2(kX, kw, J)
+    ev   = eigvals(J);
+    maxJ = maximum(ev);
+    minJ = minimum(ev);
+    bounds = [4.0 * kw, 2.0 * sqrt(kw * minJ), 4.0 * kw * kX * minJ * minJ / (maxJ * kw * kw + minJ * minJ * kX)]
+    return minimum(bounds);
+end
+
+function allFieldsEqual(
+    C1::con_state_qw_fsf_t,
+    C2::con_state_qw_fsf_t,
+    checkStatic::Bool
+)
+    @test isapprox(C1.gain_kR, C2.gain_kR);
+    @test isapprox(C1.gain_kc, C2.gain_kc);
+    @test isapprox(C1.gain_kw, C2.gain_kw);
+    @test isapprox(C1.param_a, C2.param_a);
+    @test isapprox(C1.param_b, C2.param_b);
+    @test isapprox(C1.param_c, C2.param_c);
+    @test isapprox(C1.param_d, C2.param_d);
+    @test isapprox(C1.thrust, C2.thrust);
+    for i = 1:3
+        for j = 1:3
+            @test isapprox(C1.inertia[i][j], C2.inertia[i][j]);
+        end
+    end
+    if checkStatic
+        for i = 1:3
+            @test isapprox(C1.torques[i],  C2.torques[i] );
+        end
+        @test isapprox(C1.dist_Psi,       C2.dist_Psi );
+        @test isapprox(C1.dist_Gamma,     C2.dist_Gamma );
+        @test isapprox(C1.dist_lyapunov,  C2.dist_lyapunov );
+    end
+end
+
+function allFieldsEqual(
+    R1::ref_state_qw_t,
+    R2::ref_state_qw_t,
+)
+    for i = 1:4
+        @test  isapprox(R1.quaternion[i], R2.quaternion[i]);
+    end
+    for i = 1:3
+        @test  isapprox(R1.attrates[i], R2.attrates[i]);
+        @test  isapprox(R1.attaccel[i], R2.attaccel[i] );
+    end
+end
+
+function allFieldsEqual(
+    S1::dyn_state_qw_t,
+    S2::dyn_state_qw_t,
+)
+    for i = 1:4
+        @test  isapprox(S1.quaternion[i], S2.quaternion[i]);
+    end
+    for i = 1:3
+        @test  isapprox(S1.attrates[i], S2.attrates[i]);
+    end
+end

@@ -16,12 +16,13 @@ runAllTests = true # If defined, will not recompile the C-code
         include("controller_math/test_SU2_maps.jl")
     end
     @testset "Attitude controllers" begin
+        include("controller_implementations/test_FSF_attitude_utils.jl")
         include("controller_implementations/test_FSF_continuous_SO3.jl")
         include("controller_implementations/test_FSF_continuous_SU2.jl")
         include("controller_implementations/test_FSF_discontinuous_SU2.jl")
         include("controller_implementations/test_FOF_continuous_SO3.jl")
     end
-    @testset "Utility functions" begin
+    @testset "General utility functions" begin
         include("controller_utils/test_power_distribution.jl")
     end
     @testset "Matrix math functions" begin
