@@ -24,8 +24,8 @@ using LinearAlgebra
 using LaTeXStrings
 using AerialVehicleControl
 
-showPlot = 2;     # Set to 0 for no plot, or any number in (1,2)
-savePlot = false; # Set to true if the plot is to be saved
+showPlot    = 2;     # Set to 0 for no plot, or any number in (1,2)
+savePlot    = false; # Set to true if the plot is to be saved
 
 # Recompile the C-code
 recompile()
@@ -45,6 +45,13 @@ function update_control( R::ref_state_qw_t, S::dyn_state_qw_t, C::con_state_qw_f
     return status;
 end
 
+# Disturbance (must be smaller than L in the 2-norm)
+function attitude_disturbance(L::Float64, t::Float64)
+    d = [sin(t), cos(t), sin(3*t)];
+    d = d./norm(d);
+    d = 0.99*d * L;
+end
+
 function odefun!(dx,x,C,t)
     # Extract the states
     q  = x[1:4];
@@ -54,6 +61,7 @@ function odefun!(dx,x,C,t)
 
     # Extract the parameters
     J = ntuple_2_mat(C.inertia, 3, 3)
+    L = C.gain_L;
 
     # Reference torques driving the reference dynamics
     taur = [sin(t), sin(2*t), sin(3*t)];
@@ -69,9 +77,14 @@ function odefun!(dx,x,C,t)
     status = update_control(R, S, C)
 
     # Actuate the dynamics with the computed control signal
-    tau = [C.torques[i] for i in 1:3]
+    tau  = [C.torques[i] for i in 1:3]
+
+    # Realization of the additive load disturbance (if applicable)
+    disturbance = attitude_disturbance(L, t);
+    @assert(norm(disturbance) <= L);
+
     # Physical dynamics
-    dq , dw  = attitude_dynamics( q,  w, J, tau )
+    dq , dw  = attitude_dynamics( q,  w, J, tau; delta=disturbance )
 
     # Externalize state derivatives
     dx[1:4]   = dq;
@@ -89,8 +102,9 @@ function odefun!(dx,x,C,t)
     x[21]     = C.dist_Psi;
     x[22]     = C.dist_Gamma;
     x[23]     = C.dist_lyapunov;
-    x[24]     = norm(q);
-    x[25]     = norm(qr);
+    x[24:26]  = disturbance;
+    x[27]     = norm(q);
+    x[28]     = norm(qr);
 end
 
 function initialize_example()
@@ -106,6 +120,7 @@ function initialize_example()
         maximal_feasible_kc_SU2(kR, kw, J)
     ]);
 
+    # Define the controller state object
     C  = con_state_qw_fsf_t(J, kR, kc, kw)
 
     # Initial states of the physical system
@@ -119,9 +134,9 @@ function initialize_example()
     wr0 = zeros(3,1);
 
     # Initial states for the debugging signals
-    output = zeros(11,1);
-    output[10,1] = 1.0;
-    output[11,1] = 1.0;
+    output = zeros(14,1);
+    output[13,1] = 1.0;
+    output[14,1] = 1.0;
 
     x0    = vcat(q0, w0, qr0, wr0, output)
     tspan = (0.0,20.0)
@@ -141,7 +156,8 @@ if showPlot == 1
     plot!(      sol, vars = (0,12:14), color=:red,   linewidth=2, xaxis="Time (t)",yaxis="Attitude rate [rad/s]", label=[L"\omega_{r}(t)" nothing nothing])
     pttr = plot(sol, vars = (0,15:17), color=:black, linewidth=2, xaxis="Time (t)",yaxis="Torque [Nm]",           label=[L"\tau(t)" nothing nothing])
     plot!(      sol, vars = (0,18:20), color=:red,   linewidth=2, xaxis="Time (t)",yaxis="Torque [Nm]",           label=[L"\tau_{r}(t)" nothing nothing])
-    plot(pqqr, pwwr, pttr, layout=(3,1), size=(1000,750))
+    pdis = plot(sol, vars = (0,24:26), color=:black, linewidth=2, xaxis="Time (t)",yaxis="Load disturbance [Nm]", label=[L"d(t)" nothing nothing])
+    plot(pqqr, pwwr, pttr, pdis, layout=(4,1), size=(1000,750))
     gui()
     if savePlot
         savefig("../docs/images/attitude_dynamics_disc_SU2_states.png")

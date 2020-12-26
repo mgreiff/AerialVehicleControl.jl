@@ -111,11 +111,11 @@ function quaternion_right_product(q)
     return QR
 end
 
-function attitude_dynamics(q, w, J, tau)
+function attitude_dynamics(q, w, J, tau; delta = zeros(3,))
     we      = zeros(4,1);
     we[2:4] = w;
     dq      = quaternion_left_product(q) * we / 2.0;
-    dw      = (J) \ (-skew(w)*(J*w) + tau);
+    dw      = (J) \ (-skew(w)*(J*w) + tau + delta);
     return dq, dw
 end
 
