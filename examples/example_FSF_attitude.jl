@@ -8,15 +8,26 @@
 # This example contains the code necessary to call the FSF attitude controllers
 # in the loop for simulation and verification by the DifferentialEquations.jl
 # stack. By wrapping the functions update_attitude_FSF_*_* un the update_control
-# fucntion, this is subsequently called in the odefun!() for simulation Tsit5().
+# function, this is subsequently called in the odefun!() for simulation Tsit5().
 #
-# Currently, any of the functions below can be used
+# Currently, any of the functions below can be used in this example
 #
 #     update_attitude_FSF_SO3_continuous()
 #     update_attitude_FSF_SO3_robust()
 #     update_attitude_FSF_SU2_continuous()
 #     update_attitude_FSF_SU2_discontinuous()
 #     update_attitude_FSF_SU2_robust()
+#
+# Note thet you can also define disturbances to test the controller. These can
+# be written to the function attitude_disturbance(), which takes the maximum
+# allowed gain in the l2-norm that you have powemitted in yout controller tuning
+# as well as time as arguments. However, you could also include feedback in the
+# states here (provided that you smoothly saturate these). If no disturbance is
+# to be applied, the function attitude_disturbance() should simply return an
+# array of zeros.
+#
+# The flag showPlot is used to selevtively generate plots, and the flag savePlot
+# indicates if the plots should be save to file.
 #
 ################################################################################
 using DifferentialEquations
@@ -36,20 +47,25 @@ function update_control( R::ref_state_qw_t, S::dyn_state_qw_t, C::con_state_qw_f
     # 1. update_attitude_FSF_SO3_continuous
     # 2. update_attitude_FSF_SU2_continuous
     # 3. update_attitude_FSF_SU2_discontinuous
-    status = ccall((:update_attitude_FSF_SO3_continuous, AerialVehicleControl.CONT_LIB_PATH),
+    return ccall((:update_attitude_FSF_SO3_robust, AerialVehicleControl.CONT_LIB_PATH),
         Cint,
         (Ref{ref_state_qw_t}, Ref{dyn_state_qw_t}, Ref{con_state_qw_fsf_t},),
         R,
         S,
         C)
-    return status;
 end
 
 # Disturbance (must be smaller than L in the 2-norm)
 function attitude_disturbance(L::Float64, t::Float64)
-    d = [sin(t), cos(t), sin(3*t)];
-    d = d./norm(d);
-    d = 0.99*d * L;
+    useDisturbance = true
+    if useDisturbance
+        d = [sin(t), cos(t), sin(3*t)];
+        d = d./norm(d);
+        d = 0.99*d * L;
+    else
+        d = zeros(3,);
+    end
+    return d
 end
 
 function odefun!(dx,x,C,t)
@@ -157,7 +173,7 @@ if showPlot == 1
     pttr = plot(sol, vars = (0,15:17), color=:black, linewidth=2, xaxis="Time (t)",yaxis="Torque [Nm]",           label=[L"\tau(t)" nothing nothing])
     plot!(      sol, vars = (0,18:20), color=:red,   linewidth=2, xaxis="Time (t)",yaxis="Torque [Nm]",           label=[L"\tau_{r}(t)" nothing nothing])
     pdis = plot(sol, vars = (0,24:26), color=:black, linewidth=2, xaxis="Time (t)",yaxis="Load disturbance [Nm]", label=[L"d(t)" nothing nothing])
-    plot(pqqr, pwwr, pttr, pdis, layout=(4,1), size=(1000,750))
+    plot(pqqr, pwwr, pttr, pdis, layout=(4,1), size=(1000,1000))
     gui()
     if savePlot
         savefig("../docs/images/attitude_dynamics_disc_SU2_states.png")
@@ -169,7 +185,7 @@ if showPlot == 2
     plot!(          sol, vars = (0,22), color=:red, linewidth=2, xaxis="Time (t)",yaxis="Attitude error",    label=L"\Gamma(X_r(t), X(t))")
     plotlyap    = plot(sol, vars = (0,23), color=:black, linewidth=2, xaxis="Time (t)",yaxis="Lyapunov function", label=L"\mathcal{V}(t)")
     plotlyaplog = plot(sol.t, log10.(abs.(sol[23,:])), color=:black, linewidth=2, xaxis="Time (t)",yaxis="Lyapunov function", label=L"log_{10}(\mathcal{V}(t))")
-    plot(plotattd, plotlyap, plotlyaplog, layout=(3,1), size=(1000,500))
+    plot(plotattd, plotlyap, plotlyaplog, layout=(3,1), size=(1000,750))
     gui()
     if savePlot
         savefig("../docs/images/attitude_dynamics_disc_SU2_errors.png")
