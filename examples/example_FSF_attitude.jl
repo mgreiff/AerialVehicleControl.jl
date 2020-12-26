@@ -13,8 +13,10 @@
 # Currently, any of the functions below can be used
 #
 #     update_attitude_FSF_SO3_continuous()
+#     update_attitude_FSF_SO3_robust()
 #     update_attitude_FSF_SU2_continuous()
 #     update_attitude_FSF_SU2_discontinuous()
+#     update_attitude_FSF_SU2_robust()
 #
 ################################################################################
 using DifferentialEquations
@@ -22,7 +24,7 @@ using LinearAlgebra
 using LaTeXStrings
 using AerialVehicleControl
 
-showPlot = 1;     # Set to 0 for no plot, or any number in (1,2)
+showPlot = 2;     # Set to 0 for no plot, or any number in (1,2)
 savePlot = false; # Set to true if the plot is to be saved
 
 # Recompile the C-code
@@ -95,7 +97,15 @@ function initialize_example()
     # Define the controller parameters
     J  = rand_PSD(3);
     J  = J./opnorm(J);
-    kR, kc, kw = 5.0, 1.0, 2.0;
+    kR = 5.0;
+    kw = 2.0;
+
+    # Compute a cross gain kc tht works in all cases
+    kc = 0.5 * minimum([
+        maximal_feasible_kc_SO3(kR, kw, J),
+        maximal_feasible_kc_SU2(kR, kw, J)
+    ]);
+
     a, b, c, d = 1.0, 1.0, 1.0, 1.0;
     C  = con_state_qw_fsf_t(J, kR, kc, kw, a, b, c, d)
 
@@ -133,6 +143,7 @@ if showPlot == 1
     pttr = plot(sol, vars = (0,15:17), color=:black, linewidth=2, xaxis="Time (t)",yaxis="Torque [Nm]",           label=[L"\tau(t)" nothing nothing])
     plot!(      sol, vars = (0,18:20), color=:red,   linewidth=2, xaxis="Time (t)",yaxis="Torque [Nm]",           label=[L"\tau_{r}(t)" nothing nothing])
     plot(pqqr, pwwr, pttr, layout=(3,1), size=(1000,750))
+    gui()
     if savePlot
         savefig("../docs/images/attitude_dynamics_disc_SU2_states.png")
     end
@@ -144,6 +155,7 @@ if showPlot == 2
     plotlyap    = plot(sol, vars = (0,23), color=:black, linewidth=2, xaxis="Time (t)",yaxis="Lyapunov function", label=L"\mathcal{V}(t)")
     plotlyaplog = plot(sol.t, log10.(abs.(sol[23,:])), color=:black, linewidth=2, xaxis="Time (t)",yaxis="Lyapunov function", label=L"log_{10}(\mathcal{V}(t))")
     plot(plotattd, plotlyap, plotlyaplog, layout=(3,1), size=(1000,500))
+    gui()
     if savePlot
         savefig("../docs/images/attitude_dynamics_disc_SU2_errors.png")
     end

@@ -61,7 +61,6 @@ end
             Sstruct,
             Cstruct)
 
-        println([kR, kc, kw])
         # Test that the computations passed
         @test isapprox(status, 1);
 
