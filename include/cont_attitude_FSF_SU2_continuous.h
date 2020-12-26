@@ -34,18 +34,4 @@ int update_attitude_FSF_SU2_continuous(
   con_state_qw_fsf_t * controller
 );
 
-/***************************************************************************//**
-* @brief  Assert that the controller tuning is feasible in the FSF controller
-*
-* This function takes the controller object and outputs an integer 1 if the
-* controller parameters are feasible, and a 0 if not.
-*
-* @param[in] controller - State of the controller
-* @param[in] phi - Upper bound on the initial attitude error phi \in (0, 2)
-* @return status - 1 if feasible, 0 otherwise
-*******************************************************************************/
-int assert_attitude_FSF_SU2_continuous(
-  con_state_qw_fsf_t * controller
-);
-
 #endif /* __CONT_ATTITUDE_FSF_SU2_CONTINUOUS_H__ */

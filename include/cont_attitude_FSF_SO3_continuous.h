@@ -11,6 +11,7 @@
 #include "cont_types.h"
 #include "cont_math.h"
 #include "cont_matrix_math.h"
+#include "cont_attitude_utils.h"
 
 /***************************************************************************//**
 * @brief  Update using the continuous full state feedback (FSF)  on SO(3)

@@ -18,6 +18,9 @@ int update_attitude_FSF_SO3_continuous(
   matrix_double_t Ewm, ERm, tmp31Am, tmp31Bm, tmp31Cm;
   matrix_double_t Qm, Qrm, Wm, Wrm, Arm, Tm, Jm;
 
+  /* Assert controller tuning feasibility */
+  if (0 == assert_attitude_FSF_SO3(controller)) return 0;
+
   matrix_allocate(&Rm,      3, 3);
   matrix_allocate(&Rrm,     3, 3);
   matrix_allocate(&RrTm,    3, 3);

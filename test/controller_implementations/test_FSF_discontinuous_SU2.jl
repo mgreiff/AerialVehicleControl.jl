@@ -26,15 +26,17 @@ function fixture()
     S = dyn_state_qw_t(hcat(q), hcat(w))
 
     J  = rand(3,3); J  = J + J'; J  = J + I*maximum(abs.(eigvals(J)));
-    kR, kc, kw = 1.0, 0.1, 1.0;
+    kX = 1.0;
+    kw = 1.0;
+    kc = 0.5 * maximal_feasible_kc_SU2(kX, kw, J);
     a, b, c, d = 1.0, 2.0, 3.0, 4.0;
-    C  = con_state_qw_fsf_t(J, kR, kc, kw, a, b, c, d);
+    C  = con_state_qw_fsf_t(J, kX, kc, kw, a, b, c, d);
 
-    return R, S, C, qref, wref, aref, q, w, J, kR, kc, kw
+    return R, S, C, qref, wref, aref, q, w, J, kX, kc, kw
 end
 
 @verbose(1, "Testing FSF discontinuous on SU(2)...")
-@testset "Test the continuous FSF controller on SU(2)" begin
+@testset "Test the discontinuous FSF controller on SU(2)" begin
     @testset "Good inputs" begin
         # Fixture
         Rstruct, Sstruct, Cstruct, qref, wref, aref, q, w, J, kX, kc, kw = fixture()
@@ -87,6 +89,7 @@ end
             Sstruct,
             Cstruct)
 
+        # Test that the computations passed
         @test isapprox(status, 1);
 
         # Check that all of the values in the controller memory that should remain constant are unchanged

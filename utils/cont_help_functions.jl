@@ -142,6 +142,14 @@ function maximal_feasible_kc_SU2(kX, kw, J)
     return minimum(bounds);
 end
 
+function maximal_feasible_kc_SO3(kR, kw, J)
+    ev   = eigvals(J);
+    maxJ = maximum(ev);
+    minJ = minimum(ev);
+    bounds = [kw, sqrt(kR * minJ), 4.0 * kw * kR * minJ * minJ / (maxJ * kw * kw + 4.0 * minJ * minJ * kR)]
+    return minimum(bounds);
+end
+
 function allFieldsEqual(
     C1::con_state_qw_fsf_t,
     C2::con_state_qw_fsf_t,

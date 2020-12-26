@@ -7,6 +7,31 @@
 *******************************************************************************/
 #include "cont_attitude_utils.h"
 
+int assert_attitude_FSF_SO3(
+  con_state_qw_fsf_t * controller
+){
+  double maxJ, minJ, minVal, temp;
+  double kR = controller->gain_kR;
+  double kc = controller->gain_kc;
+  double kw = controller->gain_kw;
+
+  /* Check that the parameters have the correct sign, and evaluate eig(J) */
+  if (0 == assert_attitude_FSF_parameters(controller, &minJ, &maxJ)) return 0;
+
+  /* Check that kc is set sufficiently small w.r.t. kX and kw */
+  minVal = kw;
+  temp   = sqrt(kR * minJ);
+  if (temp < minVal) minVal = temp;
+  temp   = 4.0 * kw * kR * minJ * minJ;
+  temp  /= (maxJ * kw * kw + 4.0 * minJ * minJ * kR);
+  if (temp < minVal) minVal = temp;
+  if (kc  > minVal){
+    TRACE(5, ("The controller parameters do not result in a feasible controller\n"));
+    return 0;
+  }
+  return 1;
+}
+
 int assert_attitude_FSF_SU2(
   con_state_qw_fsf_t * controller
 ){
@@ -22,7 +47,8 @@ int assert_attitude_FSF_SU2(
   minVal = 4.0 * kw;
   temp   = 2.0 * sqrt(kw * minJ);
   if (temp < minVal) minVal = temp;
-  temp   = 4.0 * kw * kR * minJ * minJ / (maxJ * kw * kw + minJ * minJ * kR);
+  temp   = 4.0 * kw * kR * minJ * minJ;
+  temp  /= (maxJ * kw * kw + minJ * minJ * kR);
   if (temp < minVal) minVal = temp;
   if (kc  > minVal){
     TRACE(5, ("The controller parameters do not result in a feasible controller\n"));
