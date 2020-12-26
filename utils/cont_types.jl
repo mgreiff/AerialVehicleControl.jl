@@ -62,6 +62,8 @@ mutable struct con_state_qw_fsf_t
     gain_kR::Cdouble
     gain_kc::Cdouble
     gain_kw::Cdouble
+    gain_eps::Cdouble
+    gain_L::Cdouble
     param_a::Cdouble
     param_b::Cdouble
     param_c::Cdouble
@@ -73,24 +75,28 @@ mutable struct con_state_qw_fsf_t
         J::Array{T,2},
         kR::Float64,
         kc::Float64,
-        kw::Float64,
-        a::Float64,
-        b::Float64,
-        c::Float64,
-        d::Float64
+        kw::Float64;
+        eps::Float64 = 1e-2,
+        L::Float64   = 1.0,
+        a::Float64   = 1.0,
+        b::Float64   = 1.0,
+        c::Float64   = 1.0,
+        d::Float64   = 1.0
     ) where {T<:Number}
         @assert(size(J,2) == 3)
         @assert(size(J,2) == 3)
-        @assert(kR > 0)
-        @assert(kc > 0)
-        @assert(kw > 0)
-        @assert(a  > 0)
-        @assert(b  > 0)
-        @assert(c  > 0)
-        @assert(d  > 0)
+        @assert(kR  > 0)
+        @assert(kc  > 0)
+        @assert(kw  > 0)
+        @assert(eps > 0)
+        @assert(L   > 0)
+        @assert(a   > 0)
+        @assert(b   > 0)
+        @assert(c   > 0)
+        @assert(d   > 0)
         Tin = ntuple(i->Cdouble(0.0), 3)
         Jin = ntuple(i->ntuple(j->Cdouble(J[i,j]), 3), 3)
-        new(0, 0, Tin, Jin, kR, kc, kw, a, b, c, d, 0, 0, 0)
+        new(0, 0, Tin, Jin, kR, kc, kw, eps, L, a, b, c, d, 0, 0, 0)
     end
 end
 

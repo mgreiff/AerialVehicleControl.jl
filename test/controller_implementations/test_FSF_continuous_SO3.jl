@@ -23,8 +23,8 @@ function fixture()
     kR = 1.0;
     kw = 1.0;
     kc = 0.5 * maximal_feasible_kc_SO3(kR, kw, J);
-    a, b, c, d = 1.0, 2.0, 3.0, 4.0;
-    C  = con_state_qw_fsf_t(J, kR, kc, kw, a, b, c, d);
+
+    C  = con_state_qw_fsf_t(J, kR, kc, kw);
 
     return R, S, C, qref, wref, aref, q, w, kR, kc, kw, J
 end

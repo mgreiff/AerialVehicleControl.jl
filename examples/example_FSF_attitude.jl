@@ -106,8 +106,7 @@ function initialize_example()
         maximal_feasible_kc_SU2(kR, kw, J)
     ]);
 
-    a, b, c, d = 1.0, 1.0, 1.0, 1.0;
-    C  = con_state_qw_fsf_t(J, kR, kc, kw, a, b, c, d)
+    C  = con_state_qw_fsf_t(J, kR, kc, kw)
 
     # Initial states of the physical system
     q0 = rand(4,1).-0.5;

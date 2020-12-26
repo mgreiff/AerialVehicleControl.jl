@@ -15,7 +15,7 @@ function fixture()
     J  = rand(3,3); J  = J + J'; J  = J + I*maximum(abs.(eigvals(J)));
     kR, kc, kw = 1.0, 1.0, 1.0;
     a, b, c, d = 0.35, 0.26, 1.0+rand(), 1.0+rand();
-    C  = con_state_qw_fsf_t(J, kR, kc, kw, a, b, c, d);
+    C  = con_state_qw_fsf_t(J, kR, kc, kw; a=a, b=b, c=c, d=d);
     C.thrust = 0.5;
     t = rand(3,1);
     C.torques = ntuple(i->Cdouble(t[i,1]), 3)

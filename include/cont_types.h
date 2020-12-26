@@ -72,6 +72,8 @@ typedef struct con_state_qw_fsf_s {
   double gain_kR;       /**< Gain relating to the attitude error              */
   double gain_kc;       /**< Gain relating to the cross-terms                 */
   double gain_kw;       /**< Gain relating to the attitude rate error         */
+  double gain_eps;      /**< Disturbance UB gain (only used by robust conts.) */
+  double gain_L;        /**< Disturbance bound (only used by robust conts.)   */
   double param_a;       /**< Constant related to the PWM-thrust map           */
   double param_b;       /**< Constant related to the PWM-thrust map           */
   double param_c;       /**< Constant related to rotor motor torque           */

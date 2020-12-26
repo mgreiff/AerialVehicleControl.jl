@@ -36,14 +36,16 @@ void example_attitude_FSF(void){
   for (i = 0; i < 12 ; i++) filtermemm.pData[i] = 0.0;
   dt = 0.1;
 
-  controller->status = 1;      /* Controller status - 0 for idle 1 for active */
-  controller->gain_kR = 4.0;   /* Gain relating to the attitude error         */
-  controller->gain_kc = 0.1;   /* Gain relating to the cross-terms            */
-  controller->gain_kw = 2.0;   /* Gain relating to the attitude rate error    */
-  controller->param_a = 0.35;  /* Constant related to the PWM-thrust map      */
-  controller->param_b = 0.26;  /* Constant related to the PWM-thrust map      */
-  controller->param_c = 0.1;   /* Constant related to rotor motor torque      */
-  controller->param_d = 0.2;   /* Distance from rotors to the center of mass  */
+  controller->status   = 1;    /* Controller status - 0 for idle 1 for active */
+  controller->gain_kR  = 4.0;  /* Gain relating to the attitude error         */
+  controller->gain_kc  = 0.1;  /* Gain relating to the cross-terms            */
+  controller->gain_kw  = 2.0;  /* Gain relating to the attitude rate error    */
+  controller->gain_eps = 0.1;  /* Gain relating to the cross-terms            */
+  controller->gain_L   = 2.0;  /* Gain relating to the attitude rate error    */
+  controller->param_a  = 0.35; /* Constant related to the PWM-thrust map      */
+  controller->param_b  = 0.26; /* Constant related to the PWM-thrust map      */
+  controller->param_c  = 0.1;  /* Constant related to rotor motor torque      */
+  controller->param_d  = 0.2;  /* Distance from rotors to the center of mass  */
 
   /* Controller inertia */
   matrix_define(&Jm, 3, 3, controller->inertia);
