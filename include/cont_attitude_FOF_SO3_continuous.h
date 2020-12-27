@@ -8,9 +8,7 @@
 #ifndef __CONT_ATTITUDE_FOF_SO3_CONTINUOUS_H__
 #define __CONT_ATTITUDE_FOF_SO3_CONTINUOUS_H__
 
-#include "cont_types.h"
 #include "cont_math.h"
-#include "cont_matrix_math.h"
 
 /***************************************************************************//**
 * @brief  Update using the continuous filtered outpot feedback (FOF) on SO(3)

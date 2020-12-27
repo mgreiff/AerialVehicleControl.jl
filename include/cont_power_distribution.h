@@ -9,7 +9,6 @@
 #define __CONT_POWER_DISTRIBUTION_H__
 
 #include "cont_math.h"
-#include "cont_matrix_math.h"
 
 /***************************************************************************//**
 * @brief  Compute the desired rotor thrusts.

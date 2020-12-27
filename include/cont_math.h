@@ -8,7 +8,6 @@
 #ifndef __CONT_MATH_H__
 #define __CONT_MATH_H__
 
-#include "cont_types.h"
 #include "cont_matrix_math.h"
 #include "math.h"
 

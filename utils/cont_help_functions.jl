@@ -211,45 +211,22 @@ function get_M1M2W_SO3(C, phi)
 
     # Evaluate matrices
     M1 = [[+kR, -kc] [-kc, +minJ]] / 2.0;
-    M2 = [[2*kR/(2 - phi), kc] [kc, maxJ]];
-    W  = [[+kR*kc/maxJ, -kc*kw/(2 * minJ)] [-kc*kw/(2 * minJ), kw - kc]] / 2.0;
+    M2 = [[2*kR/(2 - phi), kc] [kc, maxJ]] / 2.0;
+    W  = [[+kR*kc/maxJ, -kc*kw/(2 * minJ)] [-kc*kw/(2 * minJ), kw - kc]];
     return M1, M2, W
 end
 
-function get_errors_SO3(qvec, qrvec, wvec, wrvec)
-    NT = size(qvec, 2);
-    eRvec = zeros(3, NT);
-    ewvec = zeros(3, NT);
-    zvec  = zeros(2, NT);
-    znorm = zeros(1, NT);
-    for t = 1:NT
-        R  = quat_2_SO3(reshape(qvec[:,t],  (4,1)))
-        Rr = quat_2_SO3(reshape(qrvec[:,t], (4,1)))
-        w  = wvec[:,t];
-        wr = wrvec[:,t];
+function get_M1M2W_SU2(C, phi)
+    # Extract parameters
+    kX, kc, kw  = C.gain_kR, C.gain_kc, C.gain_kw;
+    J           = ntuple_2_mat(C.inertia, 3, 3);
+    minJ, maxJ  = minimum(eigvals(J)), maximum(eigvals(J));
 
-        eRvec[:,t]  = SO3_vee(Rr'*R - R'*Rr) / 2.0;
-        ewvec[:,t]  = w -  R'*Rr * wr;
-        zvec[1,t]   = norm(eRvec[:,t])
-        zvec[2,t]   = norm(ewvec[:,t])
-        znorm[1,t]  = zvec[:,t]'*zvec[:,t]
-
-    end
-    return eRvec, ewvec, zvec, znorm
-end
-
-function get_bounds_SO3(M1, M2, W, zvec)
-    NT = size(zvec, 2);
-    Vmin = zeros(1, NT);
-    Vmax = zeros(1, NT);
-    dV   = zeros(1, NT);
-    for t = 1:NT
-        z = zvec[:,t];
-        Vmin[1,t] = +z'*M1*z;
-        Vmax[1,t] = +z'*M2*z;
-        dV[1,t]   = -z'*W*z;
-    end
-    return Vmin, Vmax, dV
+    # Evaluate matrices
+    M1 = [[+4.0*kX, -kc] [-kc, +minJ]] / 2.0;
+    M2 = [[+8.0*kX/(2.0 - phi), kc] [kc, maxJ]]/2.0;
+    W  = [[+kX*kc/maxJ, -kc*kw/(2 * minJ)] [-kc*kw/(2 * minJ), kw - kc/4.0]];
+    return M1, M2, W
 end
 
 function numerical_differentiation(in, time)
@@ -296,36 +273,4 @@ function maximal_feasible_eps_SO3(
     uniboundgain = (M2max / (M1min*Wmin));
 
     return maxeps, mindecayrate, uniboundgain, phi, M1, M2, W
-end
-
-function get_info_SO3(
-    C::con_state_qw_fsf_t,
-    R0::Array{T,2},
-    Rr0::Array{T,2},
-    w0::Array{T,2},
-    wr0::Array{T,2}
-) where {T<:Number}
-
-    println("\n~~~ Information regarding the SO(3) attitude controller ~~~")
-
-    phi0 = tr(I-Rr0'*R0)/2.0;
-
-    println("\nThe initial attitude error is: Psi(Rr(t0), R(t0)) = $(phi0)\n")
-    if (phi0 > 1.5)
-        println("Warning: This is relatively large, requiring very small initial attitude rate errors\n")
-    end
-
-    maxeps, mindecayrate, uniboundgain, phi, M1, M2, W = maximal_feasible_eps_SO3(C, R0, Rr0, w0, wr0)
-
-    println("Any V(t0)/kr = $(phi) < phi < 2 can be used in the stability proof. Let phi = $(phi).")
-    if (phi > 2);
-        println("Waring. The system may move outside of the domain of exponential attraction given phi")
-        println("Lyap0/kR = $(phi), please retune the controller, or lower the initial rate error")
-    end
-
-    println("Worst case decay rate of the Lyapunov function : $(mindecayrate)\n")
-    println("Upper bound on the allowed epsilon given phi   : $(maxeps)\n")
-    println("Uniform ultimate bound K*eps, where K is       : $(uniboundgain)\n")
-
-    return M1, M2, W, uniboundgain
 end

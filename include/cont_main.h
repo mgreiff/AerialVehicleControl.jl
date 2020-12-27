@@ -8,12 +8,13 @@
 #ifndef __CONT_MAIN_H__
 #define __CONT_MAIN_H__
 
-#include "cont_types.h"
 #include "cont_attitude_reference_generator.h"
 #include "cont_power_distribution.h"
 #include "cont_attitude_FSF_SO3_continuous.h"
+#include "cont_attitude_FSF_SO3_robust.h"
 #include "cont_attitude_FSF_SU2_continuous.h"
 #include "cont_attitude_FSF_SU2_discontinuous.h"
+#include "cont_attitude_FSF_SU2_robust.h"
 #include "cont_attitude_FOF_SO3_continuous.h"
 
 int main();

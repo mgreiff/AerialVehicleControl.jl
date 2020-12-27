@@ -53,13 +53,15 @@ using AerialVehicleControl
 using Plots
 import Random
 
-# Set seed, include util functions for example, and recompile the C-code
-include("example_attitude_FSF_utils.jl")
-Random.seed!(0)
+# Recompile the controllers
 recompile()
-
+# Include util functions for the attitude example
+include("example_attitude_FSF_utils.jl")
+# Set seed
+Random.seed!(3)
 # Set the controller type
-controllerType = 1;
+controllerType = 3;
+showPlot = 3;
 
 # Disturbance (must be smaller than L in the 2-norm) used in odefun!()
 function attitude_disturbance(L::Float64, t::Float64)
@@ -171,4 +173,4 @@ prob         = ODEProblem(odefun!, x0, tspan, parameters);
 sol          = solve(prob, Tsit5(), reltol=1e-12, abstol=1e-21)
 
 # Visualize solutioncontrollerType
-solution_analysis(sol, C, controllerType; showPlot=3)
+solution_analysis(sol, C, controllerType; showPlot=showPlot)

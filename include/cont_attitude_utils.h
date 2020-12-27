@@ -8,9 +8,7 @@
 #ifndef __CONT_ATTITUDE_UTILS_H__
 #define __CONT_ATTITUDE_UTILS_H__
 
-#include "cont_types.h"
 #include "cont_math.h"
-#include "cont_matrix_math.h"
 
 /***************************************************************************//**
 * @brief Assert that the SO(3) controller is feasible

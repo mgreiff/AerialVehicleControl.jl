@@ -8,9 +8,7 @@
 #ifndef __CONT_ATTITUDE_REFERENCE_GENERATOR_H__
 #define __CONT_ATTITUDE_REFERENCE_GENERATOR_H__
 
-#include "cont_types.h"
 #include "cont_math.h"
-#include "cont_matrix_math.h"
 
 /***************************************************************************//**
 * @brief  Update the reference trajectory based on input commands
