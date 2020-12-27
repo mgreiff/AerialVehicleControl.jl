@@ -27,7 +27,13 @@ export @verbose,
     ref_state_qw_t,
     dyn_state_qw_t,
     con_state_qw_fsf_t,
-    con_state_qw_fof_t
+    con_state_qw_fof_t,
+    maximal_feasible_eps_SO3,
+    get_info_SO3,
+    get_M1M2W_SO3,
+    get_errors_SO3,
+    get_bounds_SO3,
+    numerical_differentiation
 
 #using Plots
 using LaTeXStrings
@@ -35,9 +41,11 @@ using LinearAlgebra
 using Libdl
 using Test
 
+const CONT_LIB_BASE = dirname(@__DIR__)
 const CONT_LIB_SRC  = joinpath(dirname(@__DIR__), "src")
 const CONT_LIB_NAME = "tests"
 const CONT_LIB_PATH = joinpath(CONT_LIB_SRC, CONT_LIB_NAME)
+const CONT_LIB_DOCS = joinpath(CONT_LIB_BASE, joinpath("docs", "images"))
 
 # Compilation and recompilation of the C-code
 include("../utils/cont_compile.jl")
