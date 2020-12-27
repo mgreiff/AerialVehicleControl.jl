@@ -15,14 +15,10 @@ Importantly, once a controller has been chosen for a given problem, the exact
 code used in the simulations can be run directly on the application, being
 platform independent C-code. Thus the project does not aim to solve a single
 control problem, but rather serves as an analysis tool and implementation aid
-for any given UAV control problem.
-
-
-Install Julia: export PATH="$PATH:/path/to/<Julia directory>/bin"
-Install lapack and BLAS: sudo apt-get install libblas-dev liblapack-dev
-Install Doxygen:
+for any given aerial vehicle control problem.
 
 ### Table of contents
+* @ref Installation
 * @ref Testing
 * @ref Analysis
 * @ref Tuning
@@ -30,15 +26,17 @@ Install Doxygen:
 ### Implemented controllers
 The library consists of several controllers, distinguished by begin either
 full-state-feedback controllers (FSF) or filtered output feedback controllers
-(FOF). Furthermore, the controllers are either continuous or discontinuous. A
-complete summary of the controllers, with their current implementation status
-is given by the table below.
+(FOF). Furthermore, the controllers are either continuous, discontinuous, or
+robust. A complete summary of the controllers, with their current implementation
+status is given by the table below.
 
 | Controller          | Configuration manifold | Implemented in C | Tested in Julia | Example in Julia |
 |---------------------|------------------------|------------------|-----------------|------------------|
-| FSF (continuous)    | SO(3)                  | \ref cont_attitude_FSF_SO3_continuous.c "Yes" | \ref test_FSF_continuous_SO3.jl "Yes" | \ref example_cont_attitude_FSF_SO3_continuous "Yes" |
-| FSF (continuous)    | SU(2)                  | \ref cont_attitude_FSF_SU2_continuous.c "Yes" | \ref test_FSF_continuous_SU2.jl "Yes" | \ref example_cont_attitude_FSF_SU2_continuous "Yes" |
-| FSF (discontinuous) | SU(2)                  | \ref cont_attitude_FSF_SU2_discontinuous.c "Yes" | \ref test_FSF_discontinuous_SU2.jl "Yes" | \ref example_cont_attitude_FSF_SU2_discontinuous "Yes" |
+| FSF (continuous)    | SO(3)                  | \ref cont_attitude_FSF_SO3_continuous.c "Yes" | \ref test_FSF_continuous_SO3.jl "Yes" | \ref example_attitude_FSF "Yes" |
+| FSF (robust)        | SO(3)                  | \ref cont_attitude_FSF_SO3_robust.c "Yes" | \ref test_FSF_robust_SO3.jl "Yes" | \ref example_attitude_FSF "Yes" |
+| FSF (continuous)    | SU(2)                  | \ref cont_attitude_FSF_SU2_continuous.c "Yes" | \ref test_FSF_continuous_SU2.jl "Yes" | \ref example_attitude_FSF "Yes" |
+| FSF (discontinuous) | SU(2)                  | \ref cont_attitude_FSF_SU2_discontinuous.c "Yes" | \ref test_FSF_discontinuous_SU2.jl "Yes" | \ref example_attitude_FSF "Yes" |
+| FSF (robust)        | SU(2)                  | \ref cont_attitude_FSF_SU2_robust.c "Yes" | \ref test_FSF_robust_SU2.jl "Yes" | \ref example_attitude_FSF "Yes" |
 | FSF (continuous)    | SO(3) x R^3            | No               | No              | No               |
 | FSF (continuous)    | SU(2) x R^3            | No               | No              | No               |
 | FSF (discontinuous) | SU(2) x R^3            | No               | No              | No               |
@@ -61,19 +59,49 @@ utilizing differential flatness are all provided and also tested in Julia.
 | Reference generator | SU(2)                  | \ref cont_attitude_reference_generator.c "Yes"               | No              | \ref example_cont_attitude_reference_generator "Yes" |
 | Reference generator | SU(2) x R^3            | No               | No              | No               |
 
+@page Installation
+### Installation
+To run the code, you will need to install
+* [Julia](https://julialang.org/downloads/platform/)
+* [GCC](https://gcc.gnu.org/)
+* [LAPACK](http://www.netlib.org/lapack/) and [BLAS](http://www.netlib.org/blas/)
+* [Doxygen](https://www.doxygen.nl/download.html)
+
+The last point is only required if you wish to regenerate the docs. On an Ubuntu
+18.04 Distribution, and in the order that they were mentioned, this can be done
+by executing the following
+
+```
+sudo apt install julia
+sudo apt install build-essential
+sudo apt-get install libblas-dev liblapack-dev
+sudo apt-get install doxygen
+sudo apt-get install graphviz
+```
+
+See the above links for platform specific installation instructions.
+
+Once you have cloned the repository, enter the Julia REPL, cd to the
+AerialVehicleControl.jl directory, and activate it by running
+```
+]activate .
+```
+
 @page Testing
 ### Testing
-The C code is tested using Julia 1.4.2 (although any version >1.0 should work),
+The C code is tested using Julia 1.5.1 (although any version >1.0 should work),
 and all tests can be run by executing ``include("runtests.jl")`` in the Julia
-REPL. This compiles the cont-gen stack and calls it through Libdl using the help
-functions in ``/util``, and subsequently verifies that each function in the
-stack works as intended. From the base directory, running
+REPL. This compiles the C-code and calls it through Libdl using ``ccall``,
+and subsequently verifies that each function in the C-stack works as intended.
+
+From the base directory, all tests can be run after activating the package, by
 
 ```
-cd tests && julia -e 'include("runtests.jl")'
+]activate .
+include("test/runtests.jl")
 ```
 
-launches Julia and produces an output similar to the figure below
+this produces an output similar to the figure below
 
 ```
 Test Summary:                                         | Pass  Fail  Total
@@ -89,7 +117,7 @@ All tests                                             | 3896     4   3900
       Bad inputs (wrong duty cycle column dimensions) |    1            1
   Matrix math functions                               | 3310         3310
 ERROR: LoadError: Some tests did not pass: 3896 passed, 4 failed, 0 errored, 0 broken.
-in expression starting at /home/mgreiff/Desktop/cont-gen/tests/runtests.jl:15
+in expression starting at AerialVehicleControl.jl/tests/runtests.jl:15
 ```
 
 In addition, examples of C-implementations with complete control loops are given
@@ -131,22 +159,18 @@ and the differential equation solvers in
 permits the wrapping of individual
 controllers, such as the call to the FSF attitude feedback on SO(3) below
 ```
-function update_control( R::ref_state_qw_t, S::dyn_state_qw_t, C::con_state_qw_fsf_t)
-    status = ccall((:update_control, CONT_LIB_NAME),
+ccall((:update_attitude_FSF_SO3_continuous, AerialVehicleControl.CONT_LIB_PATH),
         Cint,
         (Ref{ref_state_qw_t}, Ref{dyn_state_qw_t}, Ref{con_state_qw_fsf_t},),
-        R,
-        S,
-        C)
-    return status;
-end
+        R, S, C)
 ```
 This function can subsequently be called in the loop when simulating the NLTV
 systems using [``DifferentialEquations.jl``](https://docs.sciml.ai/stable/), as
 ```
-x0, tspan, C = initialize_example()
-prob         = ODEProblem(odefun!, x0, tspan, C);
-sol          = solve(prob, Tsit5(), reltol=1e-8, abstol=1e-8)
+x0, tspan, C = initialize_FSF_attitude_example(controllerType)
+parameters   = (C, controllerType)
+prob         = ODEProblem(odefun!, x0, tspan, parameters);
+sol          = solve(prob, Tsit5(), reltol=1e-12, abstol=1e-21)
 ```
 A set of such examples implemented in this way can be found in ``/examples``,
 and can be run out of the box. This permits a study of the controller
@@ -155,8 +179,10 @@ the C-code, such as the Lyapunov function associated with each controller. Some
 simulation examples of the code is given below as follows
 
 * @ref example_cont_attitude_FSF_SO3_continuous
+* @ref example_cont_attitude_FSF_SO3_robust
 * @ref example_cont_attitude_FSF_SU2_continuous
 * @ref example_cont_attitude_FSF_SU2_discontinuous
+* @ref example_cont_attitude_FSF_SU2_robust
 * @ref example_cont_attitude_FOF_SO3_continuous
 * @ref example_cont_attitude_reference_generator
 
@@ -176,6 +202,11 @@ Lyapunov function will be monotonically decreasing.
 
 \image html attitude_dynamics_cont_SO3_states.png "States and controls when calling the continuous FSF attitude controller on SO(3) in Julia" width=500px
 \image html attitude_dynamics_cont_SO3_errors.png "Distances and errors when calling the continuous FSF attitude controller on SO(3) in Julia" width=500px
+
+
+@section example_cont_attitude_FSF_SO3_robust Robust attitude FSF on SO(3)
+
+asd
 
 @section example_cont_attitude_FSF_SU2_continuous Continuous attitude FSF on SU(2)
 
@@ -209,6 +240,10 @@ Lyapunov function will be monotonically decreasing.
 
 \image html attitude_dynamics_disc_SU2_states.png "States and controls when calling the continuous FSF attitude controller on SO(3) in Julia" width=500px
 \image html attitude_dynamics_disc_SU2_errors.png "Distances and errors when calling the continuous FSF attitude controller on SO(3) in Julia" width=500px
+
+@section example_cont_attitude_FSF_SU2_robust Robust attitude FSF on SU(2)
+
+asd
 
 @section example_cont_attitude_FOF_SO3_continuous Continuous attitude FOF on SO(3)
 
