@@ -35,7 +35,7 @@ function test_call_matrix_double_subtraction(Am, Bm, Cm)
     return status
 end
 
-@verbose(1, "Matrix subtraction...")
+@verbose(1, "Testing matrix subtraction...")
 @testset "Matrix subtraction" begin
     @testset "Good inputs" begin
         for m = 1:10

@@ -35,7 +35,7 @@ function fixture()
 end
 
 
-@verbose(1, "Testing FOF continuous on SO(3)...")
+@verbose(1, "Testing continuous FOF on SO(3)...")
 @testset "Test the continuous FOF controller on SO(3)" begin
     @testset "Test the crosproduct sum function" begin
         # Fixture

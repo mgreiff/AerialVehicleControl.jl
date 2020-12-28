@@ -18,7 +18,7 @@
 #define CONT_GRAVACC 9.81
 
 /** \cond INTERNAL */
-/* Trace level and print options - nominally set to zero to disable outputs   */
+/* Trace level and print options  */
 #ifndef TRACE_LEVEL
 #define TRACE_LEVEL 5
 #endif

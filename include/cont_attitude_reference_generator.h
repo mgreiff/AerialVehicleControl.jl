@@ -97,10 +97,11 @@
 * stable hovering state, and that an excitation of the angles at a force command
 * of f = 0 will keep the system at roughly the same height.
 *
-* @param[in] reference - The desired normalized thrust on an interval [-1,1]
-* @param[in] commands  - The desired commands in normalized angles and thrust
-* @param[in] dt        - The time-step between updates in the reference gen.
-* @return status       - 1 if successful, 0 otherwise.
+* @param[in] commands     - The desired commands in normalized angles and thrust
+* @param[in] filterMemory - The memory of the filter (gets updated)
+* @param[in] reference    - The desired normalized thrust on an interval [-1,1]
+* @param[in] h            - The time-step between updates in the reference gen.
+* @return status          - 1 if successful, 0 otherwise.
 *******************************************************************************/
 int update_attitude_references(
   matrix_double_t * commands,

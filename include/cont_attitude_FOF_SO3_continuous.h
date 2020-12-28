@@ -83,12 +83,12 @@ int attitude_FOF_SO3_continuous_cross_terms(
 /***************************************************************************//**
 * @brief  Help function to simulate the attitude observer dynamics
 *
-*   d(Q)/dt = Q * [ deltaQ / 2 ]_{SU(2)}^{\land}
+*   d(Q)/dt = Q * [ deltaQ / 2 ]_{SU(2)}^{\^}
 *   d(W)/dt = deltaW
 *
 * For simplicity, take a first order euler method and let
 *
-*   Q(t + dt) = Q(t) * expm(dt * [ deltaQ(t) / 2 ]_{SU(2)}^{\land})
+*   Q(t + dt) = Q(t) * expm(dt * [ deltaQ(t) / 2 ]_{SU(2)}^{\^})
 *   W(t + dt) = W(t) + dt * deltaW(t)
 *
 * @param[in] Qm      - Attitude configured on SU(2)

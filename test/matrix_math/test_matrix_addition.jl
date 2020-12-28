@@ -35,7 +35,7 @@ function test_call_matrix_double_addition(Am, Bm, Cm)
     return status
 end
 
-@verbose(1, "Matrix addition...")
+@verbose(1, "Testing matrix addition...")
 @testset "Matrix addition" begin
     @testset "Good inputs" begin
         for m = 1:10

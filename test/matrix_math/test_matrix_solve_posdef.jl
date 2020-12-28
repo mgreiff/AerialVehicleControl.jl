@@ -33,7 +33,7 @@ function test_call_matrix_double_solve_posdef(Am, Bm)
     return status
 end
 
-@verbose(1, "Matrix PSD solver...")
+@verbose(1, "Testing matrix PSD solver...")
 @testset "Matrix solve PD linear systems" begin
     @testset "Good inputs" begin
         for m = 1:10

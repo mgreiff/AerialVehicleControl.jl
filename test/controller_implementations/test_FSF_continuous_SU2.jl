@@ -35,7 +35,7 @@ function fixture()
     return R, S, C, qref, wref, aref, q, w, kX, kc, kw, J
 end
 
-@verbose(1, "Testing FSF continuous on SU(2)...")
+@verbose(1, "Testing continuous FSF on SU(2)...")
 @testset "Test the continuous FSF controller on SU(2)" begin
     @testset "Good inputs" begin
         # Fixture

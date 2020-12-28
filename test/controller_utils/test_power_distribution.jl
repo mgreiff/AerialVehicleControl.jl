@@ -36,10 +36,16 @@ end
         dpar = C.param_d;
         T = C.thrust;
 
-        A = [+1    +1    +1    +1   ;
-             +0    -dpar +0    +dpar;
-             +dpar +0    -dpar +0   ;
-             -cpar +cpar -cpar +cpar]
+        # Modified configuration for the razor drone
+        A = [ +1.00  +1.00  +1.00  +1.00;
+              -dpar  -dpar  +dpar  +dpar;
+              -dpar  +dpar  +dpar  -dpar;
+              +cpar  -cpar  +cpar  -cpar]
+
+        #A = [+1    +1    +1    +1   ;
+        #     +0    -dpar +0    +dpar;
+        #     +dpar +0    -dpar +0   ;
+        #     -cpar +cpar -cpar +cpar]
 
         f_julia = A \ ([T; t]);
 

@@ -66,7 +66,9 @@ int cont_SU2_Exp(matrix_double_t * in, matrix_double_t * out);
 *
 *     out = qa * qb * qc
 *
-* @param[in] in - Pointer to a three-dimensional vector (one parameter group)
+* @param[in] a - Angle in radians
+* @param[in] b - Angle in radians
+* @param[in] c - Angle in radians
 * @param[out] out - Pointer to an element of SU(2) (here a 4-dimenisonal vector)
 * @return status - 1 if successful, 0 otherwise
 *******************************************************************************/
@@ -161,6 +163,7 @@ void cont_cross_product( matrix_double_t * inAm, matrix_double_t * inBm, matrix_
 
 /***************************************************************************//**
 * @brief Takes the sign of the input, returning +1 if the input is zero.
+*
 * @param[in] in - Input argument
 * @return output - Output sign in {-1.0, 1.0}
 *******************************************************************************/
@@ -168,7 +171,8 @@ double cont_sign_func(double in);
 
 /***************************************************************************//**
 * @brief Normalizes the vector
-* @param[in/out] vec - Input vector with either 1 row, or 1 column
+*
+* @param[out] vec - Input vector with either 1 row, or 1 column
 * @return output - 1 if successful, 0 otherwise
 *******************************************************************************/
 int cont_normalize(matrix_double_t * vec);

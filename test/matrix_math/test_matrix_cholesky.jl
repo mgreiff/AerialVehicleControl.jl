@@ -33,7 +33,7 @@ function test_call_matrix_double_cholesky(Am, Lm)
     return status
 end
 
-@verbose(1, "Matrix cholesky decpomosition...")
+@verbose(1, "Testing matrix cholesky decpomosition...")
 @testset "Matrix cholesky inplace" begin
     @testset "Good inputs" begin
         for m = 1:10

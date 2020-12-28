@@ -29,7 +29,7 @@ function fixture()
     return R, S, C, qref, wref, aref, q, w, kR, kc, kw, J
 end
 
-@verbose(1, "Testing FSF continuous on SO(3)...")
+@verbose(1, "Testing continuous FSF on SO(3)...")
 @testset "Test the continuous FSF controller on SO(3)" begin
     @testset "Check that R is in SO(3)" begin
         # Fixture
@@ -42,7 +42,7 @@ end
         R   = quat_2_SO3(q );
         Rr  = quat_2_SO3(qref);
         eR  = SO3_vee(Rr'*R - R'*Rr) / 2.0;
-        ew  = w -  R'*Rr * wref;
+        ew  = w - R'*Rr * wref;
         ff  = SO3_hat(w) * (J * w) - J*(SO3_hat(w)*R'*Rr*wref -  R'*Rr*aref);
 
         tau = -kR * eR - kw * ew + ff;

@@ -55,13 +55,16 @@ import Random
 
 # Recompile the controllers
 recompile()
+
 # Include util functions for the attitude example
 include("example_attitude_FSF_utils.jl")
+
 # Set seed
 Random.seed!(3)
+
 # Set the controller type
 controllerType = 3;
-showPlot = 3;
+showPlot       = 3;
 
 # Disturbance (must be smaller than L in the 2-norm) used in odefun!()
 function attitude_disturbance(L::Float64, t::Float64)

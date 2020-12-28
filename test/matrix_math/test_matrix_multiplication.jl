@@ -46,7 +46,7 @@ function test_call_matrix_double_multiplication(Am, Bm, Cm)
     return status
 end
 
-@verbose(1, "Matrix multiplication...")
+@verbose(1, "Testing matrix multiplication...")
 @testset "Matrix multiplication" begin
     @testset "Good inputs NN" begin
         for m = 1:10

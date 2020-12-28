@@ -15,8 +15,9 @@ int compute_power_distribution(
   double a = controller->param_a;
   double b = controller->param_b;
   double c = controller->param_c;
+  double dx = controller->param_d;
+  double dy = controller->param_d;
   double adtb;
-  double dx, dy;
   double f[4];
 
   /* Input error check*/
@@ -42,23 +43,23 @@ int compute_power_distribution(
   */
 
   /*
-  with
+  for the razor drone, with
 
   A = [   1,   1,  1,   1]
       [ -dy, -dy, dy,  dy]
       [ -dx,  dx, dx, -dx]
       [   c,  -c,  c,  -c]
 
-  for the razor drone, we instead get
+  we instead get
 
       inv(A) = [ 1/4, -1/(4*dy), -1/(4*dx),  1/(4*c)]
                [ 1/4, -1/(4*dy),  1/(4*dx), -1/(4*c)]
                [ 1/4,  1/(4*dy),  1/(4*dx),  1/(4*c)]
                [ 1/4,  1/(4*dy), -1/(4*dx), -1/(4*c)]
   */
-  /* Todo remove hard coded coefficients */
+  /* Todo remove hard coded coefficients
   dx =  0.09/2.0;
-  dy = 0.152/2.0;
+  dy = 0.152/2.0;*/
 
   f[0] = controller->thrust -(1/dy)*controller->torque[0] -(1/dx)*controller->torque[1] +(1/c)*controller->torque[2];
   f[1] = controller->thrust -(1/dy)*controller->torque[0] +(1/dx)*controller->torque[1] -(1/c)*controller->torque[2];
@@ -69,7 +70,7 @@ int compute_power_distribution(
   /* TODO make this saturation continuous using a hyperbolic tan function*/
   for (i = 0; i < 4; i++){
     if(f[i] < 0.0){
-      TRACE(5, ("Got a negative force, this should not generally happen, f[%i]=%f\n", i, f[i]));
+      TRACE(5, ("Got a negative force, f[%i]=%f, rounding to zero.\nThis should not generally happen - your controller might be too agressively tuned.\n", i, f[i]));
       f[i] = 0.0;
     }
   }
