@@ -1,7 +1,7 @@
 ################################################################################
 # Copyright (C) Marcus Greiff 2020
 #
-# @file example_attitude_FSF.jl
+# @file example_FSF_attitude.jl
 # @author Marcus Greiff
 # @date July 2020
 #
@@ -57,18 +57,21 @@ import Random
 recompile()
 
 # Include util functions for the attitude example
-include("example_attitude_FSF_utils.jl")
+include("example_FSF_attitude_utils.jl")
 
 # Set seed
 Random.seed!(3)
 
 # Set the controller type
-controllerType = 3;
-showPlot       = 3;
+controllerType  = 2;
+showPlot        = [1,2,3];
+showDisturbance = true;
+savePlot=true;
+namePlot="robust_SO3_FSF";
 
 # Disturbance (must be smaller than L in the 2-norm) used in odefun!()
 function attitude_disturbance(L::Float64, t::Float64)
-    useDisturbance = false
+    useDisturbance = true
     if useDisturbance
         d = [sin(t), cos(t), sin(3*t)];
         d = d./norm(d);
@@ -176,4 +179,8 @@ prob         = ODEProblem(odefun!, x0, tspan, parameters);
 sol          = solve(prob, Tsit5(), reltol=1e-12, abstol=1e-21)
 
 # Visualize solutioncontrollerType
-solution_analysis(sol, C, controllerType; showPlot=showPlot)
+solution_analysis(sol, C, controllerType;
+                  showPlot=showPlot,
+                  savePlot=savePlot,
+                  namePlot=namePlot,
+                  showDisturbance=showDisturbance)

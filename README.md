@@ -20,7 +20,7 @@ for any given aerial vehicle control problem.
 ### Table of contents
 * @ref Installation
 * @ref Testing
-* @ref Analysis
+* @ref Examples
 * @ref Tuning
 
 ### Implemented controllers
@@ -32,15 +32,15 @@ status is given by the table below.
 
 | Controller          | Configuration manifold | Implemented in C | Tested in Julia | Example in Julia |
 |---------------------|------------------------|------------------|-----------------|------------------|
-| FSF (continuous)    | SO(3)                  | \ref cont_attitude_FSF_SO3_continuous.c "Yes" | \ref test_FSF_continuous_SO3.jl "Yes" | \ref example_attitude_FSF "Yes" |
-| FSF (robust)        | SO(3)                  | \ref cont_attitude_FSF_SO3_robust.c "Yes" | \ref test_FSF_robust_SO3.jl "Yes" | \ref example_attitude_FSF "Yes" |
-| FSF (continuous)    | SU(2)                  | \ref cont_attitude_FSF_SU2_continuous.c "Yes" | \ref test_FSF_continuous_SU2.jl "Yes" | \ref example_attitude_FSF "Yes" |
-| FSF (discontinuous) | SU(2)                  | \ref cont_attitude_FSF_SU2_discontinuous.c "Yes" | \ref test_FSF_discontinuous_SU2.jl "Yes" | \ref example_attitude_FSF "Yes" |
-| FSF (robust)        | SU(2)                  | \ref cont_attitude_FSF_SU2_robust.c "Yes" | \ref test_FSF_robust_SU2.jl "Yes" | \ref example_attitude_FSF "Yes" |
+| FSF (continuous)    | SO(3)                  | \ref cont_attitude_FSF_SO3_continuous.c "Yes" | \ref Testing "Yes" | \ref example_cont_attitude_FSF_SO3_continuous "Yes" |
+| FSF (robust)        | SO(3)                  | \ref cont_attitude_FSF_SO3_robust.c "Yes" | \ref Testing "Yes" | \ref example_cont_attitude_FSF_SO3_robust "Yes" |
+| FSF (continuous)    | SU(2)                  | \ref cont_attitude_FSF_SU2_continuous.c "Yes" | \ref Testing "Yes" | \ref example_cont_attitude_FSF_SU2_continuous "Yes" |
+| FSF (discontinuous) | SU(2)                  | \ref cont_attitude_FSF_SU2_discontinuous.c "Yes" | \ref Testing "Yes" | \ref example_cont_attitude_FSF_SU2_discontinuous "Yes" |
+| FSF (robust)        | SU(2)                  | \ref cont_attitude_FSF_SU2_robust.c "Yes" | \ref Testing "Yes" | \ref example_cont_attitude_FSF_SU2_robust "Yes" |
 | FSF (continuous)    | SO(3) x R^3            | No               | No              | No               |
 | FSF (continuous)    | SU(2) x R^3            | No               | No              | No               |
 | FSF (discontinuous) | SU(2) x R^3            | No               | No              | No               |
-| FOF (continuous)    | SO(3) x SO(3)          | \ref cont_attitude_FOF_SO3_continuous.c "Yes" | \ref test_FOF_continuous_SO3.jl "Yes" | \ref example_cont_attitude_FOF_SO3_continuous "Yes" |
+| FOF (continuous)    | SO(3) x SO(3)          | \ref cont_attitude_FOF_SO3_continuous.c "Yes" | \ref Testing "Yes" | \ref example_cont_attitude_FOF_SO3_continuous "Yes" |
 | FOF (continuous)    | SU(2) x SU(2)          | No               | No              | No               |
 | FOF (discontinuous) | SU(2) x SU(2)          | No               | No              | No               |
 | FOF (continuous)    | SO(3) x SO(3) x R^6    | No               | No              | No               |
@@ -60,17 +60,16 @@ utilizing differential flatness are all provided and also tested in Julia.
 | Reference generator | SU(2) x R^3            | No               | No              | No               |
 
 @page Installation
-### Installation
 To run the code, you will need to install
 * [Julia](https://julialang.org/downloads/platform/)
 * [GCC](https://gcc.gnu.org/)
 * [LAPACK](http://www.netlib.org/lapack/) and [BLAS](http://www.netlib.org/blas/)
 * [Doxygen](https://www.doxygen.nl/download.html)
 
-The last point is only required if you wish to regenerate the docs. On an Ubuntu
-18.04 Distribution, and in the order that they were mentioned, this can be done
+The last point is only required if you wish to regenerate the docs (see the
+above links for platform specific installation instructions). On an Ubuntu
+20.04 Distribution, and in the order that they were mentioned, this can be done
 by executing the following
-
 ```
 sudo apt install julia
 sudo apt install build-essential
@@ -78,17 +77,19 @@ sudo apt-get install libblas-dev liblapack-dev
 sudo apt-get install doxygen
 sudo apt-get install graphviz
 ```
-
-See the above links for platform specific installation instructions.
-
-Once you have cloned the repository, enter the Julia REPL, cd to the
-AerialVehicleControl.jl directory, and activate it by running
+Next, clone the repository and enter the Julia REPL by
+```
+git clone https://github.com/mgreiff/AerialVehicleControl.jl
+cd AerialVehicleControl.jl
+julia
+```
+and activate the module it by running the following command in the Julia REPL
 ```
 ]activate .
 ```
+You can now run the tests and examples in \ref Testing and \ref Examples respectively.
 
 @page Testing
-### Testing
 The C code is tested using Julia 1.5.1 (although any version >1.0 should work),
 and all tests can be run by executing ``include("runtests.jl")`` in the Julia
 REPL. This compiles the C-code and calls it through Libdl using ``ccall``,
@@ -158,82 +159,136 @@ Free allocated memory...
 ==13480== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 ```
 
-@page "Analysis"
-### Analysis
+@page "Examples"
 The C-code can be used in the loop by calls to the relevant controller functions
 using
 [``ccall()``](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/)
 and the differential equation solvers in
 [``DifferentialEquations.jl``](https://docs.sciml.ai/stable/). The former
 permits the wrapping of individual
-controllers, such as the call to the FSF attitude feedback on SO(3) below
-```
-ccall((:update_attitude_FSF_SO3_continuous, AerialVehicleControl.CONT_LIB_PATH),
-        Cint,
-        (Ref{ref_state_qw_t}, Ref{dyn_state_qw_t}, Ref{con_state_qw_fsf_t},),
-        R, S, C)
-```
-This function can subsequently be called in the loop when simulating the NLTV
-systems using [``DifferentialEquations.jl``](https://docs.sciml.ai/stable/), as
-```
-x0, tspan, C = initialize_FSF_attitude_example(controllerType)
-parameters   = (C, controllerType)
-prob         = ODEProblem(odefun!, x0, tspan, parameters);
-sol          = solve(prob, Tsit5(), reltol=1e-12, abstol=1e-21)
-```
-A set of such examples implemented in this way can be found in ``/examples``,
-and can be run out of the box. This permits a study of the controller
-performance, and also facilitates the plotting of signals computed internally in
-the C-code, such as the Lyapunov function associated with each controller. Some
-simulation examples of the code is given below as follows
+controllers, and a set of examples implemented in this way can be found in
+``/examples``, and can be run out of the box. This permits a study of the
+controller performance, and also facilitates the plotting of signals computed
+internally in the C-code, such as the Lyapunov function associated with each
+controller and its theoretical upper and lower bounds.
 
-* @ref example_cont_attitude_FSF_SO3_continuous
-* @ref example_cont_attitude_FSF_SO3_robust
-* @ref example_cont_attitude_FSF_SU2_continuous
-* @ref example_cont_attitude_FSF_SU2_discontinuous
-* @ref example_cont_attitude_FSF_SU2_robust
-* @ref example_cont_attitude_FOF_SO3_continuous
-* @ref example_cont_attitude_reference_generator
+@section example_FSF_attitude FSF Attitude control
+All of the attitude controllers are implemented so as to take a reference
+(\ref ref_state_qw_t R) which is updated by the user and includes the reference
+system state: a reference attitude (as a quaternion), the reference attitude
+rates, and the reference attitude accelerations. This structure can be filled
+from user commands by means of filtering using the
+\ref update_attitude_references() utility function. The controllers also take
+take a state object (\ref dyn_state_qw_t S) containing the measured or estimated
+system state: an attitude (as a quaternion) and attitude rates. The FSF attitude
+controllers are all defined by a set of parameters and controller memory
+(\ref con_state_qw_fsf_t C), and in the attitude control example, found in
+``examples/example_FSF_attitude.jl``, these structures are (i) first initialized
+(with a nominal tuning in C and randomized initial conditions in R and S), then
+(ii) used to define a function handle for numerical integration, (iii) solved
+using [``DifferentialEquations.jl``](https://docs.sciml.ai/stable/) and finally
+(iv) the solution is visualized using the ``solution_analysis()`` function.
+In this example, you can define the controller that is to be used by setting
+the controllerType variable
 
-@section example_cont_attitude_FSF_SO3_continuous Continuous attitude FSF on SO(3)
+* controllerType=1 \f$\to\f$ @ref example_cont_attitude_FSF_SO3_continuous
+* controllerType=2 \f$\to\f$ @ref example_cont_attitude_FSF_SO3_robust
+* controllerType=3 \f$\to\f$ @ref example_cont_attitude_FSF_SU2_continuous
+* controllerType=4 \f$\to\f$ @ref example_cont_attitude_FSF_SU2_discontinuous
+* controllerType=5 \f$\to\f$ @ref example_cont_attitude_FSF_SU2_robust
 
-Here we run the full state feedback (FSF) continuous SO(3) controller defined in
-cont_attitude_FSF_SO3_continuous.c, steering the SU(2)-configured attitude
-dynamics. This example can be reproduced by running
-``include("example_FSF_attitude.jl")``, makes use of the
-infrastructure provided by the [``DifferentialEquations.jl``](https://docs.sciml.ai/stable/) stack, and permits
-the generation of plots such as the one below. Note that we may converge to an
-error on SU(2) which is  \f$\pm I\f$, both representing the same
-element on SO(3). Hence, \f$\Gamma(X_r, X)\rightarrow \{0\lor 2\}\f$,
+You can also choose if you wish to include a disturbance or not. The controllers
+will be tuned to guarantee feasibility, and the example warns if the
+initialization is such that the error dynamics are initialized outside of the
+domain of exponential attraction. This is done using the ``get_info()`` function
+implemented in the ``solution_analysis()`` function, whose output in terms of
+analysis and plotting is shown in the following examples, with notation
+following \cite mgreiff2020robust.
+
+@subsection example_cont_attitude_FSF_SO3_continuous Continuous control on SO(3)
+
+Here we run the continuous FSF on SO(3) defined in
+cont_attitude_FSF_SO3_continuous.c (see \cite lee2010geometric for the original
+reference). The controller is run without any disturbance, and both the
+system state and the reference are internally represented by quaternions. As
+such, we may converge to an error on SU(2) which is \f$\pm I\f$, both
+representing the same element on SO(3). Hence, \f$\Gamma(X_r, X)\rightarrow \{0\lor 2\}\f$,
 \f$\bar{\Gamma}(X_r, X)\rightarrow \{0\lor 2\}\f$, and
-\f$\Psi(R_r, R)\rightarrow 0\f$. Furthermore, with an appropriate tuning, the
-Lyapunov function will be monotonically decreasing.
+\f$\Psi(R_r, R)\rightarrow 0\f$ in both of these cases. Furthermore, with an
+appropriate tuning, the Lyapunov function will be monotonically decreasing. In
+this particular example, the ``get_info()`` function returns the following
+```
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~ Simulation done with the continuous FSF controller on SO(3) (called from C) ~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* The initial attitude error is: Psi(Rr(t0), R(t0)) = 1.37
+* Any V(t0)/kR = 1.40 < phi < 2 can be used in the stability proof. We let phi = 1.40.
+* Worst case decay rate of the Lyapunov function : 0.04120564135100125
+```
+and the control system states and errors are visualized below.
 
-\image html attitude_dynamics_cont_SO3_states.png "States and controls when calling the continuous FSF attitude controller on SO(3) in Julia" width=500px
-\image html attitude_dynamics_cont_SO3_errors.png "Distances and errors when calling the continuous FSF attitude controller on SO(3) in Julia" width=500px
+\image html continuous_SO3_FSF_states.png "States and controls when calling the continuous FSF attitude controller on SO(3)" width=500px
+\image html continuous_SO3_FSF_errors.png "Errors and attitude distances when calling the continuous FSF attitude controller on SO(3)" width=500px
+\image html continuous_SO3_FSF_analysis.png "Lyapunov function with theoretical bounds for continuous FSF attitude controller on SO(3)" width=500px
+
+Note that \f$\mathcal{V}(t)\f$ decays down to the precision set in the ODE
+solver, here an absolute and relative tolerance of \f$10^{-8}\f$, so the
+violation of the theoretical bounds is expected as \f$\mathcal{V}(t)\f$ becomes
+small, and arises due to numerical errors in the ODE solver.
 
 
-@section example_cont_attitude_FSF_SO3_robust Robust attitude FSF on SO(3)
+@subsection example_cont_attitude_FSF_SO3_robust Robust control on SO(3)
 
-asd
+Here we run the robust FSF on SO(3) defined in cont_attitude_FSF_SO3_robust.c
+(see \cite lee2013nonlinear for the original reference). The controller is run
+with a sinusoidal disturbance, which is upper bound in the \f$l_2\f$-norm by
+\f$\sup_{t \geq 0}\|d(t)\|_2<L=1.0\f$, and uses the same seed as the previous
+example for the generation of the initial conditions.
 
-@section example_cont_attitude_FSF_SU2_continuous Continuous attitude FSF on SU(2)
+The robust controller should behave much better in the face of the applied
+load disturbances than the continuous controller on SO(3), and for this
+particular example, the Lyapunov function settles around
+\f$\mathcal{V}(t)\approx 10^{-3}\f$ for the robust controller, whereas
+\f$\mathcal{V}(t)\approx 0.5\f$ if running the continuous controller in
+\ref example_cont_attitude_FSF_SO3_continuous with the same disturbance.
 
-Here we run the full state feedback (FSF) continuous SU(2) controller defined in
-cont_attitude_FSF_SU2_continuous.c, steering the SU(2)-configured attitude
-dynamics. This example can be reproduced by running
-``include("example_FSF_attitude.jl")``, makes use of the
-infrastructure provided by the [``DifferentialEquations.jl``](https://docs.sciml.ai/stable/) stack, and permits
-the generation of plots such as the one below. Here we may converge to an
-error on SU(2) \f$+I\f$. Hence, \f$\Gamma(X_r, X)\rightarrow 0\f$,
-\f$\bar{\Gamma}(X_r, X)\rightarrow 2 \f$, and
-\f$\Psi(R_r, R)\rightarrow 0\f$. Furthermore, with an appropriate tuning, the
-Lyapunov function will be monotonically decreasing.
+Again, both the system state and the reference are internally represented by
+quaternions. As such, we may converge to an error on SU(2) which is \f$\pm I\f$, both
+representing the same element on SO(3). Hence, \f$\Gamma(X_r, X)\rightarrow \{0\lor 2\}\f$,
+\f$\bar{\Gamma}(X_r, X)\rightarrow \{0\lor 2\}\f$, and
+\f$\Psi(R_r, R)\rightarrow 0\f$ in both of these cases. Furthermore, with an
+appropriate tuning, the Lyapunov function will be monotonically decreasing. In
+this particular example, the ``get_info()`` function returns the following
+```
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~ Simulation done with the robust FSF controller on SO(3) (called from C) ~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* The initial attitude error is: Psi(Rr(t0), R(t0)) = 1.37
+* Any V(t0)/kR = 1.40 < phi < 2 can be used in the stability proof. We let phi = 1.40.
+* Worst case decay rate of the Lyapunov function : 0.0412
+* Upper bound on the allowed epsilon given phi   : 0.00595
+* Uniform ultimate bound K*eps, where K is       : 141.06
+```
+and the control system states and errors are visualized below
 
-\image html attitude_dynamics_cont_SU2_states.png "States and controls when calling the continuous FSF attitude controller on SO(3) in Julia" width=500px
-\image html attitude_dynamics_cont_SU2_errors.png "Distances and errors when calling the continuous FSF attitude controller on SO(3) in Julia" width=500px
+\image html robust_SO3_FSF_states.png "States, controls and disturbance when calling the robust FSF attitude controller on SO(3)" width=500px
+\image html robust_SO3_FSF_errors.png "Errors and attitude distances when calling the robust FSF attitude controller on SO(3)" width=500px
+\image html robust_SO3_FSF_analysis.png "Lyapunov function and normed errors with theoretical bounds for robust FSF attitude controller on SO(3)" width=500px
 
-@section example_cont_attitude_FSF_SU2_discontinuous Discontinuous attitude FSF on SU(2)
+
+@subsection example_cont_attitude_FSF_SU2_continuous Continuous control on SU(2)
+
+Here we run the continuous FSF on SU2(3) defined in
+cont_attitude_FSF_SU2_continuous.c (see \cite mgreiff2020robust for the original
+reference). The controller is run without any disturbance, and both the
+system state and the reference are internally represented by quaternions. Due to the
+1:1 correspondence between quaternions and elements of SU(2), we always converge
+to an error element on SU(2) which is \f$\X_e\to I\f$. Hence \f$\Gamma(X_r, X)\rightarrow 0\f$,
+\f$\bar{\Gamma}(X_r, X)\rightarrow 2\f$, and \f$\Psi(R_r, R)\rightarrow 0\f$. Furthermore, with an
+appropriate tuning, the Lyapunov function will be monotonically decreasing. In
+this particular example, the ``get_info()`` function returns the following
+
+@subsection example_cont_attitude_FSF_SU2_discontinuous Discontinuous on SU(2)
 
 Here we run the full state feedback (FSF) discontinuous SU(2) controller defined in
 cont_attitude_FSF_SU2_discontinuous.c, steering the SU(2)-configured attitude
@@ -250,7 +305,7 @@ Lyapunov function will be monotonically decreasing.
 \image html attitude_dynamics_disc_SU2_states.png "States and controls when calling the continuous FSF attitude controller on SO(3) in Julia" width=500px
 \image html attitude_dynamics_disc_SU2_errors.png "Distances and errors when calling the continuous FSF attitude controller on SO(3) in Julia" width=500px
 
-@section example_cont_attitude_FSF_SU2_robust Robust attitude FSF on SU(2)
+@subsection example_cont_attitude_FSF_SU2_robust Robust on SU(2)
 
 asd
 

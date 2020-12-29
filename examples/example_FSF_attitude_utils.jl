@@ -1,7 +1,7 @@
 ################################################################################
 # Copyright (C) Marcus Greiff 2020
 #
-# @file example_attitude_FSF_utils.jl
+# @file example_FSF_attitude_utils.jl
 # @author Marcus Greiff
 # @date July 2020
 #
@@ -138,9 +138,9 @@ function get_info(
         Rr0 = quat_2_SO3(qr0);
 
         phi0 = tr(I-Rr0'*R0)/2.0;
-        println("The initial attitude error is: Psi(Rr(t0), R(t0)) = $(phi0)\n")
+        println("* The initial attitude error is: Psi(Rr(t0), R(t0)) = $(phi0)")
         if (phi0 > 1.5)
-            println("Warning: This is relatively large, requiring very small initial attitude rate errors\n")
+            println("* Warning: This is relatively large, requiring very small initial attitude rate errors")
         end
         maxeps, mindecayrate, uniboundgain, phi, M1, M2, W = maximal_feasible_eps_SO3(C, R0, Rr0, w0, wr0)
     end
@@ -149,9 +149,9 @@ function get_info(
         Xr0 = quat_2_SU2(qr0);
 
         phi0 = abs(0.5 * tr(Matrix{Float64}(I, 2, 2) - Xr0'*X0));
-        println("\nThe initial attitude error is: Gamma(Xr(t0), X(t0)) = $(phi0)\n")
+        println("* The initial attitude error is: Gamma(Xr(t0), X(t0)) = $(phi0)")
         if (phi0 > 1.5)
-            println("Warning: This is relatively large, requiring very small initial attitude rate errors\n")
+            println("* Warning: This is relatively large, requiring very small initial attitude rate errors")
         end
         if controllerType in [3,5]
             maxeps, mindecayrate, uniboundgain, phi, M1, M2, W = maximal_feasible_eps_SU2(C, X0, Xr0, w0, wr0; isContinuous=true)
@@ -161,16 +161,17 @@ function get_info(
         end
     end
 
-    println("Any V(t0)/kr = $(phi) < phi < 2 can be used in the stability proof. Let phi = $(phi).")
+    println("* Any V(t0)/kR = $(phi) < phi < 2 can be used in the stability proof. We let phi = $(phi).")
     if (phi > 2);
-        println("Waring. The system may move outside of the domain of exponential attraction given phi")
-        println("Lyap0/kR = $(phi), please retune the controller, or lower the initial rate error")
+        println("* Waring. The system may move outside of the domain of exponential attraction given phi")
+        println("* Lyap0/kR = $(phi), please retune the controller, or lower the initial rate error")
     end
 
-    println("Worst case decay rate of the Lyapunov function : $(mindecayrate)\n")
-    println("Upper bound on the allowed epsilon given phi   : $(maxeps)\n")
-    println("Uniform ultimate bound K*eps, where K is       : $(uniboundgain)\n")
-
+    println("* Worst case decay rate of the Lyapunov function : $(mindecayrate)")
+    if controllerType in [2,5]
+        println("* Upper bound on the allowed epsilon given phi   : $(maxeps)")
+        println("* Uniform ultimate bound K*eps, where K is       : $(uniboundgain)")
+    end
     return M1, M2, W, uniboundgain
 end
 
@@ -233,7 +234,8 @@ function solution_analysis(
     controllerType::Integer;
     showPlot=[1,2,3],
     savePlot=false,
-    namePlot="unnamed"
+    namePlot="unnamed",
+    showDisturbance=false
 )
 
     # Posterior solution analysis
@@ -253,6 +255,16 @@ function solution_analysis(
     lyap  = data[:,23]';
     lyapd = numerical_differentiation(lyap, t);
 
+    # The first element of certain logged variables (computed in the C-code)
+    # are not set at t0, hence we let tis value be the one at the next time step
+    # to tidy up and simplify the plotting.
+    psi[:,1], gamma[:,1] = psi[:,2], gamma[:,2];
+    tau[:,1] = tau[:,2];
+    taur[:,1] = taur[:,2];
+    dist[:,1] = dist[:,2];
+    lyap[:,1] = lyap[:,2];
+
+
     q0  = reshape(q[:,1],  (4,1));
     qr0 = reshape(qr[:,1], (4,1));
     w0  = reshape(w[:,1],  (3,1));
@@ -262,11 +274,11 @@ function solution_analysis(
 
     # In case we are dealine with an SO(3) controller (continuous, or robust)
     if controllerType in [1,2]
-        _, _, z, znorm = get_errors_SO3(q, qr, w, wr);
+        eAtt, eW, z, znorm = get_errors_SO3(q, qr, w, wr);
     end
     # In case we are dealine with an SU(2) controller
     if controllerType in [3,4,5]
-        _, _, z, znorm = get_errors_SU2(q, qr, w, wr)
+        eAtt, eW, z, znorm = get_errors_SU2(q, qr, w, wr)
     end
 
     Vmin, Vmax, dV   = get_bounds(M1, M2, W, z);
@@ -280,7 +292,13 @@ function solution_analysis(
         pttr = plot( t, tau',  color=:black, linewidth=2, xaxis="Time (t)",yaxis="Torque [Nm]",           label=[L"\tau(t)" nothing nothing])
                plot!(t, taur', color=:red,   linewidth=2, xaxis="Time (t)",yaxis="Torque [Nm]",           label=[L"\tau_{r}(t)" nothing nothing])
         pdis = plot( t, dist', color=:black, linewidth=2, xaxis="Time (t)",yaxis="Load disturbance [Nm]", label=[L"d(t)" nothing nothing])
-        plot(pqqr, pwwr, pttr, pdis, layout=(4,1), size=(1000,1000))
+
+        if showDisturbance
+            plot(pqqr, pwwr, pttr, pdis, layout=(4,1), size=(1000,1000))
+        else
+            plot(pqqr, pwwr, pttr, layout=(3,1), size=(1000,750))
+        end
+
         gui()
         if savePlot
             savefig(joinpath(AerialVehicleControl.CONT_LIB_DOCS, "$(namePlot)_states.png"))
@@ -288,11 +306,14 @@ function solution_analysis(
     end
 
     if 2 in showPlot
-        plotattd    = plot( t, psi',   color=:black, linewidth=2, xaxis="Time (t)",yaxis="Attitude error",    label=L"\Psi(R_r(t), R(t))")
-                      plot!(t, gamma', color=:red,   linewidth=2, xaxis="Time (t)",yaxis="Attitude error",    label=L"\Gamma(X_r(t), X(t))")
-        plotlyap    = plot( t, lyap',               color=:black, linewidth=2, xaxis="Time (t)",yaxis="Lyapunov function", label=L"\mathcal{V}(t)")
-        plotlyaplog = plot( t, log10.(abs.(lyap')), color=:black, linewidth=2, xaxis="Time (t)",yaxis="Lyapunov function", label=L"log_{10}(\mathcal{V}(t))")
-        plot(plotattd, plotlyap, plotlyaplog, layout=(3,1), size=(1000,750))
+
+        attitudeErrors = [L"e_{R}(t)", L"e_{R}(t)", L"e_{X}(t)", L"e_{X}^{\pm}(t)", L"e_{X}(t)"]
+        plotattd    = plot( t, psi',        color=:black,             linewidth=2,                            label=L"\Psi(R_r(t), R(t))")
+                      plot!(t, gamma',      color=:red,               linewidth=2,                            label=L"\Gamma(X_r(t), X(t))")
+                      plot!(t, 2 .- gamma', color=:red,  style=:dash, linewidth=2, yaxis="Attitude distance", label=L"\bar{\Gamma}(X_r(t), X(t))")
+        plotatterr  = plot( t, eAtt', color=:black, linewidth=2,                   yaxis="Attitude error",    label=[attitudeErrors[controllerType] nothing nothing])
+        plotrateerr = plot( t, eW',   color=:black, linewidth=2, xaxis="Time (t)", yaxis="Rate error",        label=[L"e_{\omega}(t)" nothing nothing])
+        plot(plotattd, plotatterr,  plotrateerr, layout=(3,1), size=(1000,750))
         gui()
         if savePlot
             savefig(joinpath(AerialVehicleControl.CONT_LIB_DOCS, "$(namePlot)_errors.png"))
@@ -327,16 +348,20 @@ function solution_analysis(
         lbval         = 1.1*minimum([dVshort; lyapshort])
         bounds        = (dVshort .- lbval, 0 .* dVshort)
         plotlyapderiv = plot(tshort,    dVshort, ribbon=bounds, color=boundcolor, linewidth=2, style=ubstyle, fillcolor=fillcolor, fillalpha=boundalpha,   label=L"-z^{\top}Wz")
-                        plot!(tshort, lyapshort,                color=sigcolor,   linewidth=2, xaxis="Time (t)",yaxis=L"\frac{d}{dt}\mathcal{V}(t)",       label=L"$\dot{\mathcal{V}}(t)$")
+                        plot!(tshort, lyapshort,                color=sigcolor,   linewidth=2, xaxis="Time (t)",yaxis=L"\frac{d}{dt}\mathcal{V}(t)",       label=L"$({d}/{dt}){\mathcal{V}}(t)$")
 
-        log10zbound   = log10.(abs.(zbound[:]))
-        log10znorm    = log10.(abs.(znorm[:]))
+        log10zbound   = zbound[:]; #log10.(abs.(zbound[:]))
+        log10znorm    = znorm[:];  #log10.(abs.(znorm[:]))
         lbval         = minimum([log10zbound; log10znorm]) - 1.0;
         bounds        = (log10zbound .- lbval, 0 .*log10zbound);
-        plotznorm     = plot(t,  log10zbound, ribbon=bounds, color=boundcolor, linewidth=2, style=ubstyle, fillcolor=fillcolor, fillalpha=boundalpha, label=L"$log_{10}(\lambda_M(M_2)(\lambda_m(M_1)\lambda_m(W))^{-1}\epsilon)$")
-                        plot!(t, log10znorm,                 color=sigcolor,   linewidth=2, xaxis="Time (t)",yaxis=L"$log_{10}(\|\|z(t)\|\|_2^2)$", label=L"$log_{10}(\|\|z(t)\|\|_2^2)$")
+        plotznorm     = plot(t,  log10zbound, ribbon=bounds, color=boundcolor, linewidth=2, style=ubstyle, fillcolor=fillcolor, fillalpha=boundalpha, label=L"$\lambda_M(M_2)(\lambda_m(M_1)\lambda_m(W))^{-1}\epsilon$")
+                        plot!(t, log10znorm,                 color=sigcolor,   linewidth=2, xaxis="Time (t)",yaxis=L"$\|\|z(t)\|\|_2^2$", label=L"$\|\|z(t)\|\|_2^2$")
 
-        plot(plotlyap, plotlyaplog, plotlyapderiv, plotznorm, layout=(4,1), size=(1000,750))
+        if showDisturbance
+            plot(plotlyap, plotlyaplog, plotlyapderiv, plotznorm, layout=(4,1), size=(1000,1000))
+        else
+            plot(plotlyap, plotlyaplog, plotlyapderiv, layout=(3,1), size=(1000,750))
+        end
         gui()
         if savePlot
             savefig(joinpath(AerialVehicleControl.CONT_LIB_DOCS, "$(namePlot)_analysis.png"))
