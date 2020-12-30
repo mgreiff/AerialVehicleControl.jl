@@ -1,5 +1,5 @@
 # AerialVehicleControl.jl
-This software serves as a framework for the generation, testing and analysis o
+This software serves as a framework for the generation, testing and analysis of
 controllers pertaining to quad-rotor dynamics. The controllers are implemented
 in C89, utlilizing [LAPACK](http://www.netlib.org/lapack/) and
 [BLAS](http://www.netlib.org/blas/). Soon it will also be possible to run with the
@@ -8,7 +8,7 @@ for implementation on MCUs should, and also standalone without any dependencies.
 
 The general idea is to evaluate through a separate implementation in Julia, to
 1. test all of the components of the controllers using unit testing,
-2. quantitatively study their closed loop behavior in simulation, and
+2. quantitatively study their closed loop behavior in simulation,
 3. tune them offline using semidefinite programming.
 
 Importantly, once a controller has been chosen and tuned for a given control problem,
@@ -31,15 +31,15 @@ Academic citations are welcomed, for the FSF and FOF controllers respectively:
 }
 
 @book{08166fa7ac4643149ea0b29bf5fe5d09,
-title = "Filtered Output Feedback Tracking Control of a Quadrotor UAV",
-author = "Erjen Lefeber and Marcus Greiff and Anders Robertsson",
-year = "2020",
-month = may,
-day = "9",
-language = "English",
-series = "DC Reports",
-publisher = "Eindhoven University of Technology, Dynamics and Control Group, Department of Mechanical Engineering, Eindhoven, The Netherlands",
-number = "DC 2020.053",
+  title = "Filtered Output Feedback Tracking Control of a Quadrotor UAV",
+  author = "Erjen Lefeber and Marcus Greiff and Anders Robertsson",
+  year = "2020",
+  month = may,
+  day = "9",
+  language = "English",
+  series = "DC Reports",
+  publisher = "Eindhoven University of Technology, Dynamics and Control Group, Department of Mechanical Engineering, Eindhoven, The Netherlands",
+  number = "DC 2020.053",
 }
 ```
 Note that the former reference is currently incomplete, as the paper is to
