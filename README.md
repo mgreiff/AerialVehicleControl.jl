@@ -18,7 +18,7 @@ control problem, but rather serves as an analysis tool and implementation aid
 for any given aerial vehicle control problem.
 
 For a holistic overview of the codebase, see the HTML documentation
-[here](http://www.control.lth.se/personnel/marcus-greiff/).
+[here](http://control.lth.se/fileadmin/control/staff/greiff/html_avc/index.html).
 
 ### Citation
 Academic citations are welcomed, for the FSF and FOF controllers respectively:
@@ -68,7 +68,8 @@ and activate the package by running
 ```
 You should now be able to run the tests and examples /test and /examples
 respectively, and the complete documentation can be found in an interactive
-HTML-format [here](http://www.control.lth.se/personnel/marcus-greiff/), as generated from docs/DOCS.md. Running
+HTML-format [here](http://control.lth.se/fileadmin/control/staff/greiff/html_avc/index.html),
+as generated from docs/DOCS.md. Running
 ```
 include("examples/example_FSF_attitude.jl")
 ```
