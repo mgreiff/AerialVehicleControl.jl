@@ -2,8 +2,8 @@
 This software serves as a framework for the generation, testing and analysis of
 controllers pertaining to quad-rotor dynamics. The controllers are implemented
 in C89, utlilizing [LAPACK](http://www.netlib.org/lapack/) and
-[BLAS](http://www.netlib.org/blas/). Soon it will also be possible to run with the
-[CMSIS DSP ARM math library](http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html
+[BLAS](http://www.netlib.org/blas/). Soon it will also be possible to run the code
+with the [CMSIS DSP ARM math library](http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html),
 as well as standalone without any dependencies.
 
 The general idea is to evaluate through a separate implementation in Julia, to
