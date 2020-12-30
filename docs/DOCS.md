@@ -1,5 +1,5 @@
 @mainpage
-This software stack serves as
+This software serves as
 a framework for the analysis and generation of controllers pertaining to
 quad-rotor dynamics. The controllers are implemented in C89 and can wrap
 [LAPACK](http://www.netlib.org/lapack/) and
@@ -218,9 +218,9 @@ representing the same element on SO(3). Hence, \f$\Gamma(X_r, X)\rightarrow \{0\
 appropriate tuning, the Lyapunov function will be monotonically decreasing. In
 this particular example, the ``get_info()`` function returns the following
 ```
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~ Simulation done with the continuous FSF controller on SO(3) (called from C) ~~~
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * The initial attitude error is: Psi(Rr(t0), R(t0)) = 1.37
 * Any V(t0)/kR = 1.40 < phi < 2 can be used in the stability proof. We let phi = 1.40.
 * Worst case decay rate of the Lyapunov function : 0.04120564135100125
@@ -260,9 +260,9 @@ representing the same element on SO(3). Hence, \f$\Gamma(X_r, X)\rightarrow \{0\
 appropriate tuning, the Lyapunov function will be monotonically decreasing. In
 this particular example, the ``get_info()`` function returns the following
 ```
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~ Simulation done with the robust FSF controller on SO(3) (called from C) ~~~
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * The initial attitude error is: Psi(Rr(t0), R(t0)) = 1.37
 * Any V(t0)/kR = 1.40 < phi < 2 can be used in the stability proof. We let phi = 1.40.
 * Worst case decay rate of the Lyapunov function : 0.0412
@@ -288,9 +288,9 @@ to an error element on SU(2) which is \f$X_e\to I\f$. Hence \f$\Gamma(X_r, X)\ri
 appropriate tuning, the Lyapunov function will be monotonically decreasing. In
 this particular example, the ``get_info()`` function returns the following
 ```
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~ Simulation done with the continuous FSF controller on SU(2) (called from C) ~~~
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * The initial attitude error is: Gamma(Xr(t0), X(t0)) = 1.56
 * Warning: This is relatively large, requiring very small initial attitude rate errors
 * Any V(t0)/kR = 1.57 < phi < 2 can be used in the stability proof. We let phi = 1.57
@@ -321,9 +321,9 @@ will converge to \f$X_e\to I\f$ or \f$X_e\to I\f$ respectively. Hence
 Furthermore, with an appropriate tuning, the Lyapunov function will be monotonically decreasing. In
 this particular example, the ``get_info()`` function returns the following
 ```
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~ Simulation done with the discontinuous FSF controller on SU(2) (called from C) ~~~
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * The initial attitude error is: Gamma(Xr(t0), X(t0)) = 1.56
 * Warning: This is relatively large, requiring very small initial attitude rate errors
 * Any V(t0)/kR = 1.0 < phi < 2 can be used in the stability proof. We let phi = 1.0.
@@ -351,9 +351,9 @@ to an error element on SU(2) which is \f$X_e\to I\f$. Hence \f$\Gamma(X_r, X)\ri
 appropriate tuning, the Lyapunov function will be monotonically decreasing. In
 this particular example, the ``get_info()`` function returns the following
 ```
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~ Simulation done with the robust FSF controller on SU(2) (called from C) ~~~
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * The initial attitude error is: Gamma(Xr(t0), X(t0)) = 1.56
 * Warning: This is relatively large, requiring very small initial attitude rate errors
 * Any V(t0)/kR = 1.5747146320898264 < phi < 2 can be used in the stability proof. We let phi = 1.57.
@@ -394,7 +394,7 @@ will be strictly decreasing.
 \image html attitude_dynamics_cont_FOF_SO3_states.png "States and controls when calling the continuous FOF attitude controller on SO(3) in Julia" width=500px
 \image html attitude_dynamics_cont_FOF_SO3_errors.png "Distances and errors when calling the continuous FOF attitude controller on SO(3) in Julia" width=500px
 
-@section example_cont_attitude_reference_generator The reference generation on SU(2)
+@section example_cont_attitude_reference_generator Reference generation on SU(2)
 The attitude reference generator is a utility that takes noisy and discontinuous
 user commands in terms of normalized angular commands and a normalized thrust,
 all defined on on the interval [-1,1], and filters these commands to generate
@@ -414,7 +414,7 @@ centered around the stable hovering force \f$\gamma_{f,1} = mg\f$ with the inter
 confined to something like \f$\gamma_{f,2} = mg/2\f$.
 
 \f{eqnarray*}{
-     y_{\phi}(s) &=& G(s)\phi_c(s) \qquad \normalfont{(normalized\;filtered\;pitch\;command)},\\
+     y_{\phi}(s) &=& G(s)\phi_c(s) \qquad (normalized\;filtered\;pitch\;command),\\
      y_{\phi}(s) &=& G(s)\phi_c(s) \qquad (normalized\;filtered\;roll\;command),\\
      y_{\theta}(s) &=& G(s)\theta_c(s) \qquad (normalized\;filtered\;yaw\;command),\\
      y_{f}(s) &=& G(s)f_c(s) \qquad (normalized\;filtered\;thust\;command).\\
