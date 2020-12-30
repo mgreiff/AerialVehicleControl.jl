@@ -42,7 +42,8 @@ publisher = "Eindhoven University of Technology, Dynamics and Control Group, Dep
 number = "DC 2020.053",
 }
 ```
-The former paper is to appear in control systems letters in early 2021.
+Note that the former reference is currently incomplete, as the paper is to
+appear in control systems letters in early 2021.
 
 ### Installation and Usage
 To run the code, you will need to install
