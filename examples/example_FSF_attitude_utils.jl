@@ -180,7 +180,11 @@ function initialize_FSF_attitude_example(controllerType::Integer)
     # Define the controller parameters
     J  = rand_PSD(3);
     J  = J./opnorm(J);
-    kR = 5.0;
+    if controllerType in [1,2]
+        kR = 5.0;
+    else
+        kR = 10.0;
+    end
     kw = 2.0;
 
     # Compute a feasible cross gain kc

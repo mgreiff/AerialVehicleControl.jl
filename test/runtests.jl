@@ -21,6 +21,7 @@ runAllTests = true # If defined, will not recompile the C-code
         include("controller_implementations/test_FSF_robust_SO3.jl")
         include("controller_implementations/test_FSF_continuous_SU2.jl")
         include("controller_implementations/test_FSF_discontinuous_SU2.jl")
+        include("controller_implementations/test_FSF_robust_SU2.jl")
         include("controller_implementations/test_FOF_continuous_SO3.jl")
     end
     @testset "General utility functions" begin

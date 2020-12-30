@@ -278,36 +278,93 @@ and the control system states and errors are visualized below
 
 @subsection example_cont_attitude_FSF_SU2_continuous Continuous control on SU(2)
 
-Here we run the continuous FSF on SU2(3) defined in
-cont_attitude_FSF_SU2_continuous.c (see \cite mgreiff2020robust for the original
-reference). The controller is run without any disturbance, and both the
+Here we run the continuous FSF on SU(2) defined in
+cont_attitude_FSF_SU2_continuous.c (see \cite mgreiff2020robust). The controller
+is run without any disturbance, and both the
 system state and the reference are internally represented by quaternions. Due to the
 1:1 correspondence between quaternions and elements of SU(2), we always converge
-to an error element on SU(2) which is \f$\X_e\to I\f$. Hence \f$\Gamma(X_r, X)\rightarrow 0\f$,
+to an error element on SU(2) which is \f$X_e\to I\f$. Hence \f$\Gamma(X_r, X)\rightarrow 0\f$,
 \f$\bar{\Gamma}(X_r, X)\rightarrow 2\f$, and \f$\Psi(R_r, R)\rightarrow 0\f$. Furthermore, with an
 appropriate tuning, the Lyapunov function will be monotonically decreasing. In
 this particular example, the ``get_info()`` function returns the following
+```
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~ Simulation done with the continuous FSF controller on SU(2) (called from C) ~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* The initial attitude error is: Gamma(Xr(t0), X(t0)) = 1.56
+* Warning: This is relatively large, requiring very small initial attitude rate errors
+* Any V(t0)/kR = 1.57 < phi < 2 can be used in the stability proof. We let phi = 1.57
+* Worst case decay rate of the Lyapunov function : 0.014
+```
+\image html continuous_SU2_FSF_states.png "States, controls and disturbance when calling the continuous FSF attitude controller on SU(2)" width=500px
+\image html continuous_SU2_FSF_errors.png "Errors and attitude distances when calling the continuous FSF attitude controller on SU(2)" width=500px
+\image html continuous_SU2_FSF_analysis.png "Lyapunov function and normed errors with theoretical bounds for continuous FSF attitude controller on SU(2)" width=500px
 
-@subsection example_cont_attitude_FSF_SU2_discontinuous Discontinuous on SU(2)
+Note that \f$\mathcal{V}(t)\f$ decays down to the precision set in the ODE
+solver, here an absolute and relative tolerance of \f$10^{-8}\f$, so the
+violation of the theoretical bounds is expected as \f$\mathcal{V}(t)\f$ becomes
+small, and arises due to numerical errors in the ODE solver.
 
-Here we run the full state feedback (FSF) discontinuous SU(2) controller defined in
-cont_attitude_FSF_SU2_discontinuous.c, steering the SU(2)-configured attitude
-dynamics. This example can be reproduced by running
-``include("example_FSF_attitude.jl")``, makes use of the
-infrastructure provided by the [``DifferentialEquations.jl``](https://docs.sciml.ai/stable/) stack, and permits
-the generation of plots such as the one below. Here we may converge to an
-error on SU(2) \f$\pm I\f$, boh representinhg the same attitude on SO(3). Hence,
+@subsection example_cont_attitude_FSF_SU2_discontinuous Discontinuous control on SU(2)
+
+Here we run the discontinuous FSF on SU(2) defined in
+cont_attitude_FSF_SU2_discontinuous.c (see \cite mgreiff2020robust). The controller
+is run without any disturbance, and both the
+system state and the reference are internally represented by quaternions. This
+example is run with the same initialization as the previous with the continuous
+control on SU(2) to showcase their difference. Here
+the SU(2) manifold is partitioned into two regions, on which the attitude error
+will converge to \f$X_e\to I\f$ or \f$X_e\to I\f$ respectively. Hence
 \f$\Gamma(X_r, X)\rightarrow \{0\lor 2\}\f$,
-\f$\bar{\Gamma}(X_r, X)\rightarrow \{0\lor 2\} \f$, and
-\f$\Psi(R_r, R)\rightarrow 0\f$. Furthermore, with an appropriate tuning, the
-Lyapunov function will be monotonically decreasing.
+\f$\bar{\Gamma}(X_r, X)\rightarrow \{2\lor 0\}\f$, and
+\f$\Psi(R_r, R)\rightarrow 0\f$.
+Furthermore, with an appropriate tuning, the Lyapunov function will be monotonically decreasing. In
+this particular example, the ``get_info()`` function returns the following
+```
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~ Simulation done with the discontinuous FSF controller on SU(2) (called from C) ~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* The initial attitude error is: Gamma(Xr(t0), X(t0)) = 1.56
+* Warning: This is relatively large, requiring very small initial attitude rate errors
+* Any V(t0)/kR = 1.0 < phi < 2 can be used in the stability proof. We let phi = 1.0.
+* Worst case decay rate of the Lyapunov function : 0.033
+```
+In general, if \f$\Gamma(X_r, X)>1\f$ the decay
+of the error will be more rapid in the discontinuous controller. This is seen in
+the worst case decay rates, being 0.032 with the discontinuous controller and
+0.014 with the previous example, and this difference can also be seen in the
+plots below.
 
-\image html attitude_dynamics_disc_SU2_states.png "States and controls when calling the continuous FSF attitude controller on SO(3) in Julia" width=500px
-\image html attitude_dynamics_disc_SU2_errors.png "Distances and errors when calling the continuous FSF attitude controller on SO(3) in Julia" width=500px
+\image html discontinuous_SU2_FSF_states.png "States, controls and disturbance when calling the discontinuous FSF attitude controller on SU(2)" width=500px
+\image html discontinuous_SU2_FSF_errors.png "Errors and attitude distances when calling the discontinuous FSF attitude controller on SU(2)" width=500px
+\image html discontinuous_SU2_FSF_analysis.png "Lyapunov function and normed errors with theoretical bounds for discontinuous FSF attitude controller on SU(2)" width=500px
 
-@subsection example_cont_attitude_FSF_SU2_robust Robust on SU(2)
+@subsection example_cont_attitude_FSF_SU2_robust Robust control on SU(2)
+Here we run the robust FSF on SU(2) defined in
+cont_attitude_FSF_SU2_robust.c (see \cite mgreiff2020robust). The controller
+is run with a sinusoidal disturbance, which is upper bound in the \f$l_2\f$-norm by
+\f$\sup_{t \geq 0}\|d(t)\|_2<L=1.0\f$, just as with the simulation of the robust
+controller on SO(3). Due to the
+1:1 correspondence between quaternions and elements of SU(2), we always converge
+to an error element on SU(2) which is \f$X_e\to I\f$. Hence \f$\Gamma(X_r, X)\rightarrow 0\f$,
+\f$\bar{\Gamma}(X_r, X)\rightarrow 2\f$, and \f$\Psi(R_r, R)\rightarrow 0\f$. Furthermore, with an
+appropriate tuning, the Lyapunov function will be monotonically decreasing. In
+this particular example, the ``get_info()`` function returns the following
+```
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~ Simulation done with the robust FSF controller on SU(2) (called from C) ~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* The initial attitude error is: Gamma(Xr(t0), X(t0)) = 1.56
+* Warning: This is relatively large, requiring very small initial attitude rate errors
+* Any V(t0)/kR = 1.5747146320898264 < phi < 2 can be used in the stability proof. We let phi = 1.57.
+* Worst case decay rate of the Lyapunov function : 0.014
+* Upper bound on the allowed epsilon given phi   : 0.0016
+* Uniform ultimate bound K*eps, where K is       : 417.78
+```
 
-asd
+\image html robust_SU2_FSF_states.png "States, controls and disturbance when calling the robust FSF attitude controller on SU(2)" width=500px
+\image html robust_SU2_FSF_errors.png "Errors and attitude distances when calling the robust FSF attitude controller on SU(2)" width=500px
+\image html robust_SU2_FSF_analysis.png "Lyapunov function and normed errors with theoretical bounds for robust FSF attitude controller on SU(2)" width=500px
 
 @section example_cont_attitude_FOF_SO3_continuous Continuous attitude FOF on SO(3)
 

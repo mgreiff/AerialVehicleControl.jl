@@ -60,18 +60,18 @@ recompile()
 include("example_FSF_attitude_utils.jl")
 
 # Set seed
-Random.seed!(3)
+Random.seed!(2)
 
 # Set the controller type
-controllerType  = 2;
+controllerType  = 4;
+showDisturbance = false;
 showPlot        = [1,2,3];
-showDisturbance = true;
-savePlot=true;
-namePlot="robust_SO3_FSF";
+savePlot        = false;
+namePlot        ="discontinuous_SU2_FSF";
 
 # Disturbance (must be smaller than L in the 2-norm) used in odefun!()
 function attitude_disturbance(L::Float64, t::Float64)
-    useDisturbance = true
+    useDisturbance = false
     if useDisturbance
         d = [sin(t), cos(t), sin(3*t)];
         d = d./norm(d);

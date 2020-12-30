@@ -92,11 +92,10 @@ int update_attitude_FSF_SU2_discontinuous(
   controller->dist_Gamma     = cont_SU2_distance(&Xrm, &Xm);
   if (cont_sign_func(Xem.pData[0]) == 1.0){
     controller->dist_lyapunov  = controller->gain_kR * controller->dist_Gamma;
-    controller->dist_lyapunov += controller->gain_kc * cont_dot_product(&eXm, &ewm);
   } else {
     controller->dist_lyapunov  = controller->gain_kR *(2.0 - controller->dist_Gamma);
-    controller->dist_lyapunov -= controller->gain_kc * cont_dot_product(&eXm, &ewm);
   }
+  controller->dist_lyapunov += controller->gain_kc * cont_dot_product(&eXm, &ewm);
   controller->dist_lyapunov   +=                 0.5 * cont_dot_product(&ewm, &tmp31Am);
 
   /* Free allocated memory */

@@ -13,9 +13,10 @@ int update_attitude_FSF_SU2_robust(
   con_state_qw_fsf_t * controller
 ){
   int i;
-  matrix_double_t Xm, Xrm, Xem, XeCm, eXm, Wm, Wrm, ewm, Arm;
+  double robustnessGain, normeA;
+  matrix_double_t Xm, Xrm, Xem, XeCm, eXm, eAm, Wm, Wrm, ewm, Arm;
   matrix_double_t tmp41Am, tmp41Bm, tmp41Cm, XeCmhatWrmXem;
-  matrix_double_t tmp31Am, tmp31Bm, tmp31Cm;
+  matrix_double_t tmp31Am, tmp31Bm, tmp31Cm, tmp33Am;
   matrix_double_t Jm, Sm, Rrm, Rm;
 
   /* Assert controller tuning feasibility */
@@ -25,12 +26,14 @@ int update_attitude_FSF_SU2_robust(
   matrix_allocate(&XeCm, 4, 1);
   matrix_allocate(&eXm,  3, 1);
   matrix_allocate(&ewm,  3, 1);
+  matrix_allocate(&eAm,     3, 1);
   matrix_allocate(&tmp41Am, 4, 1);
   matrix_allocate(&tmp41Bm, 4, 1);
   matrix_allocate(&tmp41Cm, 4, 1);
   matrix_allocate(&tmp31Am, 3, 1);
   matrix_allocate(&tmp31Bm, 3, 1);
   matrix_allocate(&tmp31Cm, 3, 1);
+  matrix_allocate(&tmp33Am, 3, 3);
   matrix_allocate(&XeCmhatWrmXem, 4, 1);
   matrix_allocate(&Sm,  3, 3);
   matrix_allocate(&Rrm, 3, 3);
@@ -57,6 +60,17 @@ int update_attitude_FSF_SU2_robust(
   cont_SU2_vee(&XeCmhatWrmXem, &tmp31Am);
   mat_sub(&Wm, &tmp31Am, &ewm);
 
+  /* Compute the robustness term */
+  matrix_copy(&eXm, &tmp31Am);
+  matrix_copy(&Jm,  &tmp33Am);
+  mat_sol(&tmp33Am, &tmp31Am);
+  for (i = 0; i < 3; i++) eAm.pData[i] = ewm.pData[i] + controller->gain_kc * tmp31Am.pData[i];
+  normeA = 0.0;
+  for (i = 0; i < 3; i++) normeA += pow(eAm.pData[i], 2.0);
+  normeA = sqrt(normeA);
+  robustnessGain  = pow(controller->gain_L, 2.0);
+  robustnessGain /= (controller->gain_L * normeA + controller->gain_eps);
+
   /* Compute feed-forward term */
   cont_SO3_hat(&Wm, &Sm);
   mat_mul(&Jm, &Wm, &tmp31Am);
@@ -80,6 +94,7 @@ int update_attitude_FSF_SU2_robust(
     controller->torque[i] += tmp31Bm.pData[i];
     controller->torque[i] -= controller->gain_kR * eXm.pData[i];
     controller->torque[i] -= controller->gain_kw * ewm.pData[i];
+    controller->torque[i] -=      robustnessGain * eAm.pData[i];
   }
 
   /* Update distances for debugging purposes */
@@ -98,12 +113,14 @@ int update_attitude_FSF_SU2_robust(
   free(XeCm.pData);
   free(eXm.pData);
   free(ewm.pData);
+  free(eAm.pData);
   free(tmp41Am.pData);
   free(tmp41Bm.pData);
   free(tmp41Cm.pData);
   free(tmp31Am.pData);
   free(tmp31Bm.pData);
   free(tmp31Cm.pData);
+  free(tmp33Am.pData);
   free(XeCmhatWrmXem.pData);
   free(Sm.pData);
   free(Rm.pData);
