@@ -17,31 +17,6 @@ platform independent C-code. Thus the project does not aim to solve a single
 control problem, but rather serves as an analysis tool and implementation aid
 for any given aerial vehicle control problem.
 
-### Installation
-To run the code, you will need to install
-
-* [Julia](https://julialang.org/downloads/platform/)
-* [GCC](https://gcc.gnu.org/)
-* [LAPACK](http://www.netlib.org/lapack/) and [BLAS](http://www.netlib.org/blas/)
-* [Doxygen](https://www.doxygen.nl/download.html)
-
-The last point is only required if you wish to regenerate the docs (see the
-above links for platform specific installation instructions).
-
-Clone the repository and enter the Julia REPL by
-```
-git clone https://github.com/mgreiff/AerialVehicleControl.jl
-cd AerialVehicleControl.jl
-julia
-```
-and activate the package it by running the following command in the Julia REPL
-```
-]activate .
-```
-You should now be able to run the tests and examples /test and /examples
-respectively, and the complete documentation can be found in an interactive
-HTML-format here, as generated from docs/DOCS.md.
-
 ### Citation
 Academic citations are welcomed, for the FSF and FOF controllers respectively:
 ```
@@ -65,3 +40,34 @@ number = "DC 2020.053",
 }
 ```
 The former paper is to appear in control systems letters in early 2021.
+
+### Installation and Usage
+To run the code, you will need to install
+
+* [Julia](https://julialang.org/downloads/platform/) (last run on 1.5.1, any >=1.4 should work)
+* [GCC](https://gcc.gnu.org/) (last run with version 9.3.0)
+* [LAPACK](http://www.netlib.org/lapack/) and [BLAS](http://www.netlib.org/blas/) (last run on version 3.9.0-1build1)
+* [Doxygen](https://www.doxygen.nl/download.html) (last run on version 1.8.17)
+
+The last point is only required if you wish to regenerate the docs (see the
+above links for platform specific installation instructions).
+
+Clone the repository and enter the Julia REPL by
+```
+git clone https://github.com/mgreiff/AerialVehicleControl.jl
+cd AerialVehicleControl.jl
+julia
+```
+and activate the package it by running the following command in the Julia REPL
+```
+]activate .
+```
+You should now be able to run the tests and examples /test and /examples
+respectively, and the complete documentation can be found in an interactive
+HTML-format here, as generated from docs/DOCS.md. Running
+```
+include("examples/example_FSF_attitude.jl")
+```
+produces the following output
+
+![Lyapunov function](/docs/images/robust_SU2_FSF_analysis.png "alt text")
