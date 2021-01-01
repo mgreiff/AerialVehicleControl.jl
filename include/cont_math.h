@@ -11,6 +11,9 @@
 #include "cont_matrix_math.h"
 #include "math.h"
 
+#define CONT_MASS 0.1      /**< UAV mass (kg)                                 */
+#define CONT_GRAVACC 9.81  /**< Gravitational acceleration  (m/s^2)           */
+
 /***************************************************************************//**
 * @brief Conjugate an element of SU(2)
 * @param[in] qin - Pointer to a four-dimensional input quaternion

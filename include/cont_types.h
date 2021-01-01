@@ -14,9 +14,6 @@
 #include <assert.h>
 #include <string.h>
 
-#define CONT_MASS 0.1
-#define CONT_GRAVACC 9.81
-
 /** \cond INTERNAL */
 /* Trace level and print options  */
 #ifndef TRACE_LEVEL
@@ -49,7 +46,6 @@ fprintf(stderr, "\033[0;34m--- %s - %d ---\033[0m\n", __FILE__, __LINE__);\
 * Any library, be it CMSIS, LAPACK or something else can be used provided an
 * an interface is provided such that the relevant library functions can be
 * called with the matrix_double_t as an input argument.
-*
 *******************************************************************************/
 typedef struct matrix_double_s {
   int numRows;          /**< Number of columns                                */
@@ -119,14 +115,70 @@ typedef struct ref_state_qw_s {
   double thrust;        /**< Smoothened commanded lateral thrust              */
 } ref_state_qw_t;
 
-/* Matrix utility functions */
+/***************************************************************************//**
+* @brief Print a matrix on a Matlab/Julia format
+* @param[in] mat - Input matrix
+* @param[in] variableName - Any variable name, only used for the printout
+*******************************************************************************/
 void matrix_print( matrix_double_t *mat, char * variableName);
+
+/***************************************************************************//**
+* @brief Get an entry of a matrix (irrespective of the used memory layout)
+*
+* @param[in] mat - Input matrix
+* @param[in] row - The row index
+* @param[in] column - The column index
+* @return output - The sought matrix element
+*******************************************************************************/
 double matrix_get( matrix_double_t *mat, int row, int column );
+
+/***************************************************************************//**
+* @brief Set an entry of a matrix (irrespective of the used memory layout)
+*
+* @param[in] mat - Input matrix
+* @param[in] row - The row index
+* @param[in] column - The column index
+* @param[in] value - The value (double) that is to be written to mat(row, col)
+*******************************************************************************/
 void matrix_set( matrix_double_t *mat, int row, int column, double value );
+
+/***************************************************************************//**
+* @brief Set all antries of a matrix to zero
+* @param[in] mat - Input matrix
+*******************************************************************************/
 void matrix_zero( matrix_double_t *matrix );
+
+/***************************************************************************//**
+* @brief Set a square matrix to the identity matrix
+* @param[in] mat - Input matrix
+*******************************************************************************/
 void matrix_identity( matrix_double_t *matrix );
+
+/***************************************************************************//**
+* @brief Allocate memory for a matrix struct of given dimensions
+*
+* @param[in] mat - Input matrix
+* @param[in] row - The row index
+* @param[in] column - The column index
+*******************************************************************************/
 void matrix_allocate( matrix_double_t *matrix, int numRows, int numCols );
+
+/***************************************************************************//**
+* @brief Define a matrix to use already allocated memory
+*
+* @param[in] mat - Input matrix
+* @param[in] row - The row index
+* @param[in] column - The column index
+* @param[in] data - Pointer to already allocated memory
+*******************************************************************************/
 void matrix_define( matrix_double_t *matrix, int numRows, int numCols, double *data );
+
+/***************************************************************************//**
+* @brief Copy one metrix into another Bmat <-- Amat, overwriting Bmat
+*
+* @param[in] Amat - Input matrix
+* @param[out] Bmat - The copied matrix output
+*******************************************************************************/
 void matrix_copy(matrix_double_t *Amat, matrix_double_t *Bmat);
 
 #endif /* __CONT_TYPES_H__ */

@@ -7,12 +7,14 @@
 *******************************************************************************/
 #include "cont_types.h"
 
+/** \cond INTERNAL */
 void dbg_printf(const char *fmt, ...){
   va_list args;
   va_start(args, fmt);
   vfprintf(stderr, fmt, args);
   va_end(args);
 }
+/** \endcond */
 
 void matrix_print(
   matrix_double_t *mat,
