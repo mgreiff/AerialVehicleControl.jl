@@ -466,8 +466,3 @@ cycles.
 
 \image html reference_attitude_filtered.png "Normalized filtered commanded inputs" width=500px
 \image html reference_attitude_refs.png "Generated references based on the commanded inputs with the gamma-constants defining the signal intervals all set to 1" width=500px
-
-@page Tuning
-The tuning algorithms are currently implemented in Matlab, but will be migrated
-to the cont-gen stack at a later time. This includes robust worst-case tuning by
-BMIs, and data-driven tuning algorithms using the NLopts stack.

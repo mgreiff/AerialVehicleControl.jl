@@ -54,7 +54,6 @@ Mkfile.old
 dkms.conf
 
 src/run
-src/tests
 
 build/
 install_manifest.txt
