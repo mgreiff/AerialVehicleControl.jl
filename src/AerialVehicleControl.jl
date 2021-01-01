@@ -44,9 +44,9 @@ const CONT_LIB_UTIL = joinpath(CONT_LIB_BASE, "utils")
 const CONT_LIB_PATH = joinpath(CONT_LIB_SRC,  "run")
 const CONT_LIB_DOCS = joinpath(CONT_LIB_BASE, joinpath("docs", "images"))
 
-# Compilation and recompilation of the C-code
+# Recompilation of the C-code
 include(joinpath(CONT_LIB_UTIL, "cont_compile.jl"))
-# The unmutable Julia types mirroring the structs in C
+# Julia types mirroring the structs in C (see cont_types.c)
 include(joinpath(CONT_LIB_UTIL, "cont_types.jl"))
 # The help functions used in the tests and examples
 include(joinpath(CONT_LIB_UTIL, "cont_help_functions.jl"))

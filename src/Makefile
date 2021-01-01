@@ -1,11 +1,10 @@
 IDIR =../include
-CC=gcc
-CC_quiet=@gcc
+ODIR = obj
+CC   = @gcc # For quiet compilation, set to gcc for verbose output
+
 LINK_LAPACK = true
 
 override CFLAGS += -I$(IDIR) -ansi -pedantic -Wall -Werror -g
-
-ODIR = obj
 
 LIBS = -lm
 ifeq ($(LINK_LAPACK), true)
@@ -41,13 +40,14 @@ _OBJ += cont_attitude_reference_generator.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: %.c $(DEPS)
-	$(CC_quiet) -c -o $@ $< $(CFLAGS)
+	@mkdir -p $(ODIR)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 run: $(OBJ)
-	$(CC_quiet) -o $@ $^ $(CFLAGS) $(LIBS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ run
+	rm -rf $(ODIR) *~ core $(INCDIR)/*~ run
 
 debug:
-	valgrind --tool=memcheck --leak-check=yes ./run
+	make clean run && valgrind --tool=memcheck --leak-check=yes ./run
