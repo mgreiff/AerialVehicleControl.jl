@@ -33,7 +33,6 @@ export @verbose,
     get_M1M2W_SU2,
     numerical_differentiation
 
-#using Plots
 using LaTeXStrings
 using LinearAlgebra
 using Libdl
@@ -42,12 +41,12 @@ using Test
 const CONT_LIB_BASE = dirname(@__DIR__)
 const CONT_LIB_SRC  = joinpath(CONT_LIB_BASE, "src")
 const CONT_LIB_UTIL = joinpath(CONT_LIB_BASE, "utils")
-const CONT_LIB_PATH = joinpath(CONT_LIB_SRC,  "tests")
+const CONT_LIB_PATH = joinpath(CONT_LIB_SRC,  "run")
 const CONT_LIB_DOCS = joinpath(CONT_LIB_BASE, joinpath("docs", "images"))
 
 # Compilation and recompilation of the C-code
 include(joinpath(CONT_LIB_UTIL, "cont_compile.jl"))
-# The unmutable Julia types mirroring this in C
+# The unmutable Julia types mirroring the structs in C
 include(joinpath(CONT_LIB_UTIL, "cont_types.jl"))
 # The help functions used in the tests and examples
 include(joinpath(CONT_LIB_UTIL, "cont_help_functions.jl"))
