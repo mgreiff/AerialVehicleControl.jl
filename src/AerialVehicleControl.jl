@@ -40,16 +40,16 @@ using Libdl
 using Test
 
 const CONT_LIB_BASE = dirname(@__DIR__)
-const CONT_LIB_SRC  = joinpath(dirname(@__DIR__), "src")
-const CONT_LIB_NAME = "tests"
-const CONT_LIB_PATH = joinpath(CONT_LIB_SRC, CONT_LIB_NAME)
+const CONT_LIB_SRC  = joinpath(CONT_LIB_BASE, "src")
+const CONT_LIB_UTIL = joinpath(CONT_LIB_BASE, "utils")
+const CONT_LIB_PATH = joinpath(CONT_LIB_SRC,  "tests")
 const CONT_LIB_DOCS = joinpath(CONT_LIB_BASE, joinpath("docs", "images"))
 
 # Compilation and recompilation of the C-code
-include("../utils/cont_compile.jl")
+include(joinpath(CONT_LIB_UTIL, "cont_compile.jl"))
 # The unmutable Julia types mirroring this in C
-include("../utils/cont_types.jl")
+include(joinpath(CONT_LIB_UTIL, "cont_types.jl"))
 # The help functions used in the tests and examples
-include("../utils/cont_help_functions.jl")
+include(joinpath(CONT_LIB_UTIL, "cont_help_functions.jl"))
 
 end
