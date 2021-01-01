@@ -399,8 +399,8 @@ SO(3), the attitude errors \f$\pm I\in SU(2)\f$ corresponds to the element
 \f$I\in SO(3)\f$ on SO(3). Furthermore, with any tuning, the Lyapunov function
 will be strictly decreasing.
 
-\image html attitude_dynamics_cont_FOF_SO3_states.png "States and controls when calling the continuous FOF attitude controller on SO(3) in Julia" width=500px
-\image html attitude_dynamics_cont_FOF_SO3_errors.png "Distances and errors when calling the continuous FOF attitude controller on SO(3) in Julia" width=500px
+\image html continuous_SO3_FOF_states.png "States and controls when calling the continuous FOF attitude controller on SO(3) in Julia" width=500px
+\image html continuous_SO3_FOF_errors.png "Distances and errors when calling the continuous FOF attitude controller on SO(3) in Julia" width=500px
 
 @section example_cont_attitude_reference_generator Reference generation on SU(2)
 The attitude reference generator is a utility that takes noisy and discontinuous

@@ -138,7 +138,7 @@ end
 # the numerical CG-intergration cheme implemented in the FOF controller.
 using Plots
 pq = plot(sol, vars = (0,1:4), color=:black, linewidth=2, xaxis="Time (t)", yaxis="Attitude [.]", label=[L"q(t)\;\;(computed\;in\;Julia)" nothing nothing nothing])
-plot!(time, Qtraj',  color=:red, style=:dash,  linewidth=2, xaxis="Time (t)", yaxis="Attitude [.]", label=[L"q(t)\;\;(computed\;in\;C)" nothing nothing nothing])
+plot!(time, Qtraj',  color=:blue, style=:dash,  linewidth=2, xaxis="Time (t)", yaxis="Attitude [.]", label=[L"q(t)\;\;(computed\;in\;C)" nothing nothing nothing])
 pw = plot(sol, vars = (0,5:7), color=:black, linewidth=2, xaxis="Time (t)",yaxis="Attitude rate [rad/s]", label=[L"\omega(t)\;\;(computed\;in\;Julia)" nothing nothing])
-plot!(time, Wtraj', color=:red, style=:dash, linewidth=2, xaxis="Time (t)",yaxis="Attitude rate [rad/s]", label=[L"\omega(t)\;\;(computed\;in\;C)" nothing nothing])
+plot!(time, Wtraj', color=:blue, style=:dash, linewidth=2, xaxis="Time (t)",yaxis="Attitude rate [rad/s]", label=[L"\omega(t)\;\;(computed\;in\;C)" nothing nothing])
 plot(pq, pw, layout=(2,1), size=(1000,750))

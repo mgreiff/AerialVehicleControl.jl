@@ -17,7 +17,7 @@ using LaTeXStrings
 using AerialVehicleControl
 
 showPlot = [1,2];
-savePlot = true;
+savePlot = false;
 namePlot = "reference_attitude";
 
 # Recompile the C-code

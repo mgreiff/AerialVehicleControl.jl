@@ -29,8 +29,9 @@ using LinearAlgebra
 using LaTeXStrings
 using AerialVehicleControl
 
-showPlot = 1;     # Set to 0 for no plot, or any number in (1,2)
+showPlot = [1,2];     # Set to 0 for no plot, or any number in (1,2)
 savePlot = false; # Set to true if the plot is to be saved
+namePlot = "continuous_SO3"
 
 # Recompile the C-code
 recompile()
@@ -237,29 +238,32 @@ prob               = ODEProblem(odefun!, x0, tspan, [S, C]);
 sol                = solve(prob, Euler(), adaptive=false, dt = 1e-4)
 
 # Visualization of the results
-using Plots
-if showPlot == 1
+if 1 in showPlot
+    using Plots
     pqqr = plot(sol, vars = (0,1:4),   color=:black, style=:solid, linewidth=2, xaxis="Time (t)",yaxis="Attitude [.]", label=[L"q(t)" nothing nothing nothing])
-    plot!(      sol, vars = (0,8:11),  color=:red,   style=:dash,  linewidth=2, xaxis="Time (t)",yaxis="Attitude [.]", label=[L"q_r(t)" nothing nothing nothing])
-    plot!(      sol, vars = (0,15:18),  color=:blue, style=:dot,   linewidth=2, xaxis="Time (t)",yaxis="Attitude [.]", label=[L"\hat{q}(t)" nothing nothing nothing])
+    plot!(      sol, vars = (0,8:11),  color=:blue,  style=:dash,  linewidth=2, xaxis="Time (t)",yaxis="Attitude [.]", label=[L"q_r(t)" nothing nothing nothing])
+    plot!(      sol, vars = (0,15:18), color=:red,   style=:dot,   linewidth=2, xaxis="Time (t)",yaxis="Attitude [.]", label=[L"\hat{q}(t)" nothing nothing nothing])
     pwwr = plot(sol, vars = (0,5:7),   color=:black, style=:solid, linewidth=2, xaxis="Time (t)",yaxis="Attitude rate [rad/s]", label=[L"\omega(t)" nothing nothing])
-    plot!(      sol, vars = (0,12:14), color=:red,   style=:dash,  linewidth=2, xaxis="Time (t)",yaxis="Attitude rate [rad/s]", label=[L"\omega_{r}(t)" nothing nothing])
-    plot!(      sol, vars = (0,19:21), color=:blue,  style=:dot,   linewidth=2, xaxis="Time (t)",yaxis="Attitude rate [rad/s]", label=[L"\hat{\omega}(t)" nothing nothing])
+    plot!(      sol, vars = (0,12:14), color=:blue,  style=:dash,  linewidth=2, xaxis="Time (t)",yaxis="Attitude rate [rad/s]", label=[L"\omega_{r}(t)" nothing nothing])
+    plot!(      sol, vars = (0,19:21), color=:red,   style=:dot,   linewidth=2, xaxis="Time (t)",yaxis="Attitude rate [rad/s]", label=[L"\hat{\omega}(t)" nothing nothing])
     pttr = plot(sol, vars = (0,22:24), color=:black, style=:solid, linewidth=2, xaxis="Time (t)",yaxis="Torque [Nm]",           label=[L"\tau_r(t)" nothing nothing])
-    plot!(      sol, vars = (0,25:27), color=:red,   style=:solid, linewidth=2, xaxis="Time (t)",yaxis="Torque [Nm]",           label=[L"\tau(t)" nothing nothing])
+    plot!(      sol, vars = (0,25:27), color=:blue,  style=:solid, linewidth=2, xaxis="Time (t)",yaxis="Torque [Nm]",           label=[L"\tau(t)" nothing nothing])
     plot(pqqr, pwwr, pttr, layout=(3,1), size=(1000,750))
+    gui()
     if savePlot
-        savefig("../docs/images/attitude_dynamics_cont_FOF_SO3_states.png")
+        savefig(joinpath(AerialVehicleControl.CONT_LIB_DOCS, "$(namePlot)_FOF_states.png"))
     end
 end
 
-if showPlot == 2
+if 2 in showPlot
+    using Plots
     plotattd = plot(sol, vars = (0,30), color=:black, linewidth=2, xaxis="Time (t)",yaxis="Attitude error",    label=L"\Psi(\hat{R}(t), R(t))")
-    plot!(          sol, vars = (0,31), color=:red,   linewidth=2, xaxis="Time (t)",yaxis="Attitude error",    label=L"\Gamma(R_r(t), R(t))")
+    plot!(          sol, vars = (0,31), color=:blue,  linewidth=2, xaxis="Time (t)",yaxis="Attitude error",    label=L"\Gamma(R_r(t), R(t))")
     plotlyap    = plot(sol, vars = (0,29), color=:black, linewidth=2, xaxis="Time (t)",yaxis="Lyapunov function", label=L"\mathcal{V}(t)")
     plotlyaplog = plot(sol.t, log10.(abs.(sol[29,:])), color=:black, linewidth=2, xaxis="Time (t)",yaxis="Lyapunov function", label=L"log_{10}(\mathcal{V}(t))")
     plot(plotattd, plotlyap, plotlyaplog, layout=(3,1), size=(1000,500))
+    gui()
     if savePlot
-        savefig("../docs/images/attitude_dynamics_cont_FOF_SO3_errors.png")
+        savefig(joinpath(AerialVehicleControl.CONT_LIB_DOCS, "$(namePlot)_FOF_errors.png"))
     end
 end
