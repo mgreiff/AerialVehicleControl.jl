@@ -16,8 +16,9 @@ using LinearAlgebra
 using LaTeXStrings
 using AerialVehicleControl
 
-showPlot = 1;     # Set to 0 for no plot, or any number in (1,2)
-savePlot = false; # Set to true if the plot is to be saved
+showPlot = [1,2];
+savePlot = true;
+namePlot = "reference_attitude";
 
 # Recompile the C-code
 recompile()
@@ -75,30 +76,27 @@ end
 
 # Visualize the filtered command trajectories
 
-if showPlot == 1
+if 1 in showPlot
+    color1 = :black
+    color2 = :blue
     using Plots
-    plot1 = plot(time[1,:], comm[1,:], linestyle = :dash, color=:black, linewidth=4, xaxis="Time (t)", yaxis="Commanded normalized angle", label=L"f_c(t)")
-    plot!(time[1,:], traj[1,:], color=:red, linewidth=2, label=L"y_f(t)")
-    plot!(time[1,:], traj[2,:], linestyle = :dash, color=:red, linewidth=2, label=L"(d/dt){y}_f(t)")
-    plot!(time[1,:], traj[3,:], linestyle = :dot,  color=:red, linewidth=2, label=L"(d^2/dt^2){y}_f(t)")
-    plot2 = plot(time[1,:], comm[2,:], linestyle = :dash, color=:black, linewidth=4, xaxis="Time (t)", yaxis="Commanded normalized angle", label=L"\phi_c(t)")
-    plot!(time[1,:], traj[4,:], color=:red, linewidth=2, label=L"y_\phi(t)")
-    plot!(time[1,:], traj[5,:], linestyle = :dash, color=:red, linewidth=2, label=L"(d/dt){y}_\phi(t)")
-    plot!(time[1,:], traj[6,:], linestyle = :dot,  color=:red, linewidth=2, label=L"(d^2/dt^2){y}_\phi(t)")
-    plot3 = plot(time[1,:], comm[3,:], linestyle = :dash, color=:black, linewidth=4, xaxis="Time (t)", yaxis="Commanded normalized angle", label=L"\phi_c(t)")
-    plot!(time[1,:], traj[7,:], color=:red, linewidth=2, label=L"y_\psi(t)")
-    plot!(time[1,:], traj[8,:], linestyle = :dash, color=:red, linewidth=2, label=L"(d/dt){y}_\theta(t)")
-    plot!(time[1,:], traj[9,:], linestyle = :dot,  color=:red, linewidth=2, label=L"(d^2/dt^2){y}_\theta(t)")
-    plot4 = plot(time[1,:], comm[4,:], linestyle = :dash, color=:black, linewidth=4, xaxis="Time (t)",yaxis="Commanded normalized force", label=L"\theta_c(t)")
-    plot!(time[1,:], traj[10,:], color=:red, linewidth=2, label=L"y_\psi(t)")
-    plot!(time[1,:], traj[11,:], linestyle = :dash, color=:red, linewidth=2, label=L"(d/dt){y}_\psi(t)")
-    plot!(time[1,:], traj[12,:], linestyle = :dot,  color=:red, linewidth=2, label=L"(d^2/dt^2){y}_\psi(t)")
+    plot1 = plot( time[1,:], comm[1,:],      color=color1, linestyle = :dash,             linewidth=4, xaxis="Time (t)", yaxis="Commanded normalized angle", label=L"f_c(t)")
+            plot!(time[1,:], traj[1:3,:]',   color=color2, linestyle = [:dot :dot :dash], linewidth=2, label=[L"y_\phi(t)" L"(d/dt){y}_\phi(t)" L"(d^2/dt^2){y}_\phi(t)"])
+    plot2 = plot( time[1,:], comm[2,:],      color=color1, linestyle = :dash,             linewidth=4, xaxis="Time (t)", yaxis="Commanded normalized angle", label=L"\phi_c(t)")
+            plot!(time[1,:], traj[4:6,:]',   color=color2, linestyle = [:dot :dot :dash], linewidth=2, label=[L"y_\theta(t)" L"(d/dt){y}_\theta(t)" L"(d^2/dt^2){y}_\theta(t)"])
+    plot3 = plot( time[1,:], comm[3,:],      color=color1, linestyle = :dash,             linewidth=4, xaxis="Time (t)", yaxis="Commanded normalized angle", label=L"\theta_c(t)")
+            plot!(time[1,:], traj[7:9,:]',   color=color2, linestyle = [:dot :dot :dash], linewidth=2, label=[L"y_\psi(t)" L"(d/dt){y}_\psi(t)" L"(d^2/dt^2){y}_\psi(t)"])
+    plot4 = plot( time[1,:], comm[4,:],      color=color1, linestyle = :dash,             linewidth=4, xaxis="Time (t)",yaxis="Commanded normalized force", label=L"\theta_c(t)")
+            plot!(time[1,:], traj[10:12,:]', color=color2, linestyle = [:dot :dot :dash], linewidth=2, label=[L"y_f(t)" L"(d/dt){y}_f(t)" L"(d^2/dt^2){y}_f(t)"])
     plot(plot1, plot2, plot3, plot4, layout=(2,2), size=(1000,750));
-    #savefig("../docs/images/example_reference_attitude_filtered.png")
+    gui()
+    if savePlot
+        savefig(joinpath(AerialVehicleControl.CONT_LIB_DOCS, "$(namePlot)_filtered.png"))
+    end
 end
 
 # Visualize the resulting attitude reference trajectories
-if showPlot == 2
+if 2 in showPlot
     using Plots
     dq       = diff(qtraj, dims=2)./dt;
     w_approx = zeros(3,T - 1);
@@ -109,12 +107,18 @@ if showPlot == 2
         w_approx[:,i] = 2*prod[2:4,1];
     end
 
-    plotq = plot(time', qtraj', linewidth=2, linestyle = [:solid :dash :dashdot :dot], color=[:black :red :red :red], xaxis="Time (t)",yaxis="Reference attitude", label=[L"q_1(t)" L"q_2(t)" L"q_3(t)" L"q_4(t)"])
-    plotw = plot(time', wtraj', linewidth=2, linestyle = [:dash :dashdot :dot], color=:red, xaxis="Time (t)",yaxis="Reference att. rates", label=[L"\omega_1(t)" L"\omega_2(t)" L"\omega_3(t)"])
+    color1 = :black
+    color2 = :blue
+
+    plotq = plot(time', qtraj', linewidth=2, linestyle = [:solid :dash :dashdot :dot], color=[color1 color2 color2 color2], xaxis="Time (t)",yaxis="Reference attitude", label=[L"q_1(t)" L"q_2(t)" L"q_3(t)" L"q_4(t)"])
+    plotw = plot(time', wtraj', linewidth=2, linestyle = [:dash :dashdot :dot], color=color2, xaxis="Time (t)",yaxis="Reference att. rates", label=[L"\omega_1(t)" L"\omega_2(t)" L"\omega_3(t)"])
     plot!(time[1:1:end-1], w_approx', color=:black, label=[L"2 [q^*(t)\otimes ({q}(t) - {q}(t-h))/h]_{SU(2)}^{hat}" nothing nothing])
-    plota = plot(time', atraj', linewidth=2, linestyle = [:dash :dashdot :dot], color=:red, xaxis="Time (t)",yaxis="Reference att. accels", label=[L"\alpha_1(t)" L"\alpha_2(t)" L"\alpha_3(t)"])
+    plota = plot(time', atraj', linewidth=2, linestyle = [:dash :dashdot :dot], color=color2, xaxis="Time (t)",yaxis="Reference att. accels", label=[L"\alpha_1(t)" L"\alpha_2(t)" L"\alpha_3(t)"])
     plot!(time[1:1:end-1], diff(wtraj, dims=2)'./dt, color=:black, label=[L"(\omega(t) - \omega(t-h))/h" nothing nothing])
-    plotf = plot(time', ftraj', linewidth=2, linestyle = [:solid], color=:black, xaxis="Time (t)",yaxis="Reference force", label=L"f(t)")
+    plotf = plot(time', ftraj', linewidth=2, linestyle = [:solid], color=color1, xaxis="Time (t)",yaxis="Reference force", label=L"f(t)")
     plot(plotq, plotw, plota, plotf, layout=(4,1), size=(1000,750));
-    #savefig("../docs/images/example_reference_attitude_refs.png")
+    gui()
+    if savePlot
+        savefig(joinpath(AerialVehicleControl.CONT_LIB_DOCS, "$(namePlot)_refs.png"))
+    end
 end

@@ -110,7 +110,7 @@ int update_attitude_references(
   double h
 );
 
-/* TODO refactor and test this */
+/** \cond INTERNAL */
 int cont_SU2_triple_derivatives(
   matrix_double_t * in,
   int derivA,
@@ -119,6 +119,12 @@ int cont_SU2_triple_derivatives(
   matrix_double_t * out
 );
 
-/* TODO refactor and test this */
-int cont_get_cossin(matrix_double_t * input, int deriv, double * ca, double * sa);
+int cont_get_cossin(
+  matrix_double_t * input,
+  int deriv,
+  double * ca,
+  double * sa
+);
+/** \endcond */
+
 #endif /* __CONT_ATTITUDE_REFERENCE_GENERATOR_H__ */

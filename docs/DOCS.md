@@ -1,8 +1,8 @@
 @mainpage
 This software serves as
-a framework for the analysis and generation of controllers pertaining to
-quad-rotor dynamics. The controllers are implemented in C89 and can wrap
-[LAPACK](http://www.netlib.org/lapack/) and
+a framework for the analysis and generation of controllers pertaining to the
+control of quad-rotor dynamics. The controllers are implemented in C89 and can
+wrap [LAPACK](http://www.netlib.org/lapack/) and
 [BLAS](http://www.netlib.org/blas/), or the
 [CMSIS DSP ARM math library](http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html),
 should these be available - if not, the
@@ -30,6 +30,7 @@ full-state-feedback controllers (FSF) or filtered output feedback controllers
 robust. A complete summary of the controllers, with their current implementation
 status is given by the table below.
 
+
 | Controller          | Configuration manifold | Implemented in C | Tested in Julia | Example in Julia |
 |---------------------|------------------------|------------------|-----------------|------------------|
 | FSF (continuous)    | SO(3)                  | \ref cont_attitude_FSF_SO3_continuous.c "Yes" | \ref Testing "Yes" | \ref example_cont_attitude_FSF_SO3_continuous "Yes" |
@@ -37,15 +38,7 @@ status is given by the table below.
 | FSF (continuous)    | SU(2)                  | \ref cont_attitude_FSF_SU2_continuous.c "Yes" | \ref Testing "Yes" | \ref example_cont_attitude_FSF_SU2_continuous "Yes" |
 | FSF (discontinuous) | SU(2)                  | \ref cont_attitude_FSF_SU2_discontinuous.c "Yes" | \ref Testing "Yes" | \ref example_cont_attitude_FSF_SU2_discontinuous "Yes" |
 | FSF (robust)        | SU(2)                  | \ref cont_attitude_FSF_SU2_robust.c "Yes" | \ref Testing "Yes" | \ref example_cont_attitude_FSF_SU2_robust "Yes" |
-| FSF (continuous)    | SO(3) x R^3            | No               | No              | No               |
-| FSF (continuous)    | SU(2) x R^3            | No               | No              | No               |
-| FSF (discontinuous) | SU(2) x R^3            | No               | No              | No               |
 | FOF (continuous)    | SO(3) x SO(3)          | \ref cont_attitude_FOF_SO3_continuous.c "Yes" | \ref Testing "Yes" | \ref example_cont_attitude_FOF_SO3_continuous "Yes" |
-| FOF (continuous)    | SU(2) x SU(2)          | No               | No              | No               |
-| FOF (discontinuous) | SU(2) x SU(2)          | No               | No              | No               |
-| FOF (continuous)    | SO(3) x SO(3) x R^6    | No               | No              | No               |
-| FOF (continuous)    | SU(2) x SU(2) x R^6    | No               | No              | No               |
-| FOF (discontinuous) | SU(2) x SU(2) x R^6    | No               | No              | No               |
 
 ### Implemented utilities
 In addition to the controllers, basic functionality such as the computation of
@@ -58,6 +51,21 @@ utilizing differential flatness are all provided and also tested in Julia.
 | Flatness eq.        | SU(2) x R^3            | No               | No              | No               |
 | Reference generator | SU(2)                  | \ref cont_attitude_reference_generator.c "Yes"               | No              | \ref example_cont_attitude_reference_generator "Yes" |
 | Reference generator | SU(2) x R^3            | No               | No              | No               |
+
+### Forthcoming controllers and utilities
+The table below shows the upcoming items that will be included in the aerial
+vehicle control stack.
+
+| Feature             | Configuration manifold | Implemented in C | Tested in Julia | Example in Julia |
+|---------------------|------------------------|------------------|-----------------|------------------|
+| FSF (continuous)    | SO(3) x R^3            | No               | No              | No               |
+| FSF (continuous)    | SU(2) x R^3            | No               | No              | No               |
+| FSF (discontinuous) | SU(2) x R^3            | No               | No              | No               |
+| FOF (continuous)    | SU(2) x SU(2)          | No               | No              | No               |
+| FOF (discontinuous) | SU(2) x SU(2)          | No               | No              | No               |
+| FOF (continuous)    | SO(3) x SO(3) x R^6    | No               | No              | No               |
+| FOF (continuous)    | SU(2) x SU(2) x R^6    | No               | No              | No               |
+| FOF (discontinuous) | SU(2) x SU(2) x R^6    | No               | No              | No               |
 
 @page Installation
 To run the code, you will need to install
@@ -105,29 +113,30 @@ include("test/runtests.jl")
 This compiles the C-code as a shared library and proceeds to call individual functions, testing them against the same functions implemented in Julia. You can also run the tests individually to see exactly how specific functions have been implemented and their intended usage. Running all the tests produces the output below.
 
 ```
+Compiling: Using LAPACK...
+...
 Testing math functions...
 Testing the SO(3) maps...
 Testing the SU(2) maps...
 Testing FSF utilities...
-Testing FSF continuous on SO(3)...
-Testing FSF robust on SO(3)...
-Testing FSF continuous on SU(2)...
-Testing FSF discontinuous on SU(2)...
-Testing FSF robust on SU(2)...
-Testing FOF continuous on SO(3)...
+Testing continuous FSF on SO(3)...
+Testing robust FSF on SO(3)...
+Testing continuous FSF on SU(2)...
+Testing discontinuous FSF on SU(2)...
+Testing robust FSF on SU(2)...
+Testing continuous FOF on SO(3)...
 Testing the power distribution...
-Matrix addition (inplace)...
-Matrix addition...
-Matrix cholesky decpomosition (inplace)...
-Matrix cholesky decpomosition...
-Matrix PSD solver...
-Matrix multiplication...
-Matrix PSD solver...
-Matrix subtraction (inplace)...
-Matrix subtraction...
-Matrix transposition...
+Testing matrix addition (inplace)...
+Testing matrix addition...
+Testing matrix PSD solver...
+Testing matrix multiplication...
+Testing matrix PSD solver...
+Testing matrix subtraction (inplace)...
+Testing matrix subtraction...
+Testing matrix transposition...
 Test Summary: | Pass  Total
-All tests     | 4123   4123
+All tests     | 4121   4121
+
 ```
 
 In addition, examples of C-implementations with complete control loops are given
@@ -136,7 +145,7 @@ debug command from the bash shell, Valgrind will be run on the compiled stack to
 check for memory leaks. From the base directory, running
 
 ```
-cd tests && make clean && make && make debug
+cd src && make clean && make && make debug
 ```
 
 produces an output similar to that below
@@ -148,15 +157,15 @@ Free allocated memory...
 Allocate memory for the reference, state and controller structs...
 Set some controller parameters, define dynamics and reference
 Free allocated memory...
-==13480==
-==13480== HEAP SUMMARY:
-==13480==     in use at exit: 0 bytes in 0 blocks
-==13480==   total heap usage: 8,238 allocs, 8,238 frees, 351,976 bytes allocated
-==13480==
-==13480== All heap blocks were freed -- no leaks are possible
-==13480==
-==13480== For counts of detected and suppressed errors, rerun with: -v
-==13480== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==69077==
+==69077== HEAP SUMMARY:
+==69077==     in use at exit: 0 bytes in 0 blocks
+==69077==   total heap usage: 13,038 allocs, 13,038 frees, 964,080 bytes allocated
+==69077==
+==69077== All heap blocks were freed -- no leaks are possible
+==69077==
+==69077== For lists of detected and suppressed errors, rerun with: -s
+==69077== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 ```
 
 @page "Examples"
@@ -189,7 +198,7 @@ controllers are all defined by a set of parameters and controller memory
 using [``DifferentialEquations.jl``](https://docs.sciml.ai/stable/) and finally
 (iv) the solution is visualized using the ``solution_analysis()`` function.
 In this example, you can define the controller that is to be used by setting
-the controllerType variable
+the ``controllerType`` variable. Here,
 
 * controllerType=1 \f$\to\f$ @ref example_cont_attitude_FSF_SO3_continuous
 * controllerType=2 \f$\to\f$ @ref example_cont_attitude_FSF_SO3_robust
@@ -210,7 +219,7 @@ following \cite mgreiff2020robust.
 Here we run the continuous FSF on SO(3) defined in
 cont_attitude_FSF_SO3_continuous.c (see \cite lee2010geometric for the original
 reference). The controller is run without any disturbance, and both the
-system state and the reference are internally represented by quaternions. As
+controlled system and the reference system attitudes are internally represented by quaternions. As
 such, we may converge to an error on SU(2) which is \f$\pm I\f$, both
 representing the same element on SO(3). Hence, \f$\Gamma(X_r, X)\rightarrow \{0\lor 2\}\f$,
 \f$\bar{\Gamma}(X_r, X)\rightarrow \{0\lor 2\}\f$, and
@@ -223,7 +232,7 @@ this particular example, the ``get_info()`` function returns the following
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * The initial attitude error is: Psi(Rr(t0), R(t0)) = 1.37
 * Any V(t0)/kR = 1.40 < phi < 2 can be used in the stability proof. We let phi = 1.40.
-* Worst case decay rate of the Lyapunov function : 0.04120564135100125
+* Worst case decay rate of the Lyapunov function : 0.041
 ```
 and the control system states and errors are visualized below.
 
@@ -235,7 +244,6 @@ Note that \f$\mathcal{V}(t)\f$ decays down to the precision set in the ODE
 solver, here an absolute and relative tolerance of \f$10^{-8}\f$, so the
 violation of the theoretical bounds is expected as \f$\mathcal{V}(t)\f$ becomes
 small, and arises due to numerical errors in the ODE solver.
-
 
 @subsection example_cont_attitude_FSF_SO3_robust Robust control on SO(3)
 
@@ -252,7 +260,7 @@ particular example, the Lyapunov function settles around
 \f$\mathcal{V}(t)\approx 0.5\f$ if running the continuous controller in
 \ref example_cont_attitude_FSF_SO3_continuous with the same disturbance.
 
-Again, both the system state and the reference are internally represented by
+Again, both the controlled system and the reference system attitudes are internally represented by
 quaternions. As such, we may converge to an error on SU(2) which is \f$\pm I\f$, both
 representing the same element on SO(3). Hence, \f$\Gamma(X_r, X)\rightarrow \{0\lor 2\}\f$,
 \f$\bar{\Gamma}(X_r, X)\rightarrow \{0\lor 2\}\f$, and
@@ -275,13 +283,12 @@ and the control system states and errors are visualized below
 \image html robust_SO3_FSF_errors.png "Errors and attitude distances when calling the robust FSF attitude controller on SO(3)" width=500px
 \image html robust_SO3_FSF_analysis.png "Lyapunov function and normed errors with theoretical bounds for robust FSF attitude controller on SO(3)" width=500px
 
-
 @subsection example_cont_attitude_FSF_SU2_continuous Continuous control on SU(2)
 
 Here we run the continuous FSF on SU(2) defined in
-cont_attitude_FSF_SU2_continuous.c (see \cite mgreiff2020robust). The controller
+cont_attitude_FSF_SU2_continuous.c (see \cite mgreiff2020robust for the original reference). The controller
 is run without any disturbance, and both the
-system state and the reference are internally represented by quaternions. Due to the
+controlled system and the reference system attitudes are internally represented by quaternions. Due to the
 1:1 correspondence between quaternions and elements of SU(2), we always converge
 to an error element on SU(2) which is \f$X_e\to I\f$. Hence \f$\Gamma(X_r, X)\rightarrow 0\f$,
 \f$\bar{\Gamma}(X_r, X)\rightarrow 2\f$, and \f$\Psi(R_r, R)\rightarrow 0\f$. Furthermore, with an
@@ -308,7 +315,7 @@ small, and arises due to numerical errors in the ODE solver.
 @subsection example_cont_attitude_FSF_SU2_discontinuous Discontinuous control on SU(2)
 
 Here we run the discontinuous FSF on SU(2) defined in
-cont_attitude_FSF_SU2_discontinuous.c (see \cite mgreiff2020robust). The controller
+cont_attitude_FSF_SU2_discontinuous.c (see \cite mgreiff2020robust for the original reference). The controller
 is run without any disturbance, and both the
 system state and the reference are internally represented by quaternions. This
 example is run with the same initialization as the previous with the continuous
@@ -341,7 +348,7 @@ plots below.
 
 @subsection example_cont_attitude_FSF_SU2_robust Robust control on SU(2)
 Here we run the robust FSF on SU(2) defined in
-cont_attitude_FSF_SU2_robust.c (see \cite mgreiff2020robust). The controller
+cont_attitude_FSF_SU2_robust.c (see \cite mgreiff2020robust for the original reference). The controller
 is run with a sinusoidal disturbance, which is upper bound in the \f$l_2\f$-norm by
 \f$\sup_{t \geq 0}\|d(t)\|_2<L=1.0\f$, just as with the simulation of the robust
 controller on SO(3). Due to the
@@ -356,7 +363,7 @@ this particular example, the ``get_info()`` function returns the following
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * The initial attitude error is: Gamma(Xr(t0), X(t0)) = 1.56
 * Warning: This is relatively large, requiring very small initial attitude rate errors
-* Any V(t0)/kR = 1.5747146320898264 < phi < 2 can be used in the stability proof. We let phi = 1.57.
+* Any V(t0)/kR = 1.57 < phi < 2 can be used in the stability proof. We let phi = 1.57.
 * Worst case decay rate of the Lyapunov function : 0.014
 * Upper bound on the allowed epsilon given phi   : 0.0016
 * Uniform ultimate bound K*eps, where K is       : 417.78
@@ -369,24 +376,25 @@ this particular example, the ``get_info()`` function returns the following
 @section example_cont_attitude_FOF_SO3_continuous Continuous attitude FOF on SO(3)
 
 Here we run the filtered output feedback (FOF) continuous SO(3) controller
-defined in cont_attitude_FOF_SO3_continuous.c, steering the SU(2)-configured
-attitude dynamics \f$\{X, \omega\}\f$, to a reference \f$\{X_r, \omega_r\}\f$
-by estimating \f$\{\hat{X}, \hat{\omega}\}\f$ without direct knowledge of the
-system states.
+defined in cont_attitude_FOF_SO3_continuous.c (see \cite 08166fa7ac4643149ea0b29bf5fe5d09 for the original reference), steering the
+SU(2)-configured attitude dynamics \f$\{X, \omega\}\f$, to a reference
+\f$\{X_r, \omega_r\}\f$ by estimating \f$\{\hat{X}, \hat{\omega}\}\f$ without
+direct knowledge of the system states.
 
-This is a radically different controller to the previous FSF controller, as we
-now provide directional and gyroscopic measurements, which are used to form the
-innovation terms of an estimator. The estimator state is integrated on each
-time-step in the C-implementation using a CG-method, and as such, we need to use
-single-step integration methods in Julia to simulate it.
+This is a very different controller to the previous FSF controllers, as we
+now provide directional and gyroscopic measurements (instead of complete state
+information), which are used to form the innovation terms of an estimator. The
+estimator state is integrated on each time-step in the C-implementation using
+Crouch Grossman-method, and as such, we need to use single-step integration
+methods in Julia to simulate it.
 
  This example can be reproduced by running
 ``include("example_FOF_attitude.jl")``, makes use of the
-infrastructure provided by the [``DifferentialEquations.jl``](https://docs.sciml.ai/stable/) stack, and permits
+the [``DifferentialEquations.jl``](https://docs.sciml.ai/stable/) package, and permits
 the generation of plots such as the one below. Here we may converge to an
 error on SU(2) of \f$\pm I\f$, both in the observer and controller error. Hence,
 in some simulations, the quaternion trajectories will mirror each-other as time
-goes to infinity. This behaviour is to be expected - as the FOF is designed on
+goes to infinity. This behavior is to be expected - as the FOF is designed on
 SO(3), the attitude errors \f$\pm I\in SU(2)\f$ corresponds to the element
 \f$I\in SO(3)\f$ on SO(3). Furthermore, with any tuning, the Lyapunov function
 will be strictly decreasing.
@@ -405,32 +413,28 @@ third-order system with a pole in -p on the form
   G(s) = \frac{p^3}{s^3 + 3ps^2 + 3p^3s + p^3}.
 \f]
 
-These signals are subsequently multiplied by a positive constant, defining the
-size of the interval on which the signals are defined. For the angles, it would
-be reasonable to bound the angles to something like
-\f$\gamma_\phi = \gamma_\theta = 0.4\f$ [rad], and the yaw can be set much
-larger, at something like \f$\gamma_\psi =2\pi\f$ [rad], and the force should be
-centered around the stable hovering force \f$\gamma_{f,1} = mg\f$ with the interval
-confined to something like \f$\gamma_{f,2} = mg/2\f$.
+outputting the filtered commands
 
 \f{eqnarray*}{
      y_{\phi}(s) &=& G(s)\phi_c(s) \qquad (normalized\;filtered\;pitch\;command),\\
      y_{\phi}(s) &=& G(s)\phi_c(s) \qquad (normalized\;filtered\;roll\;command),\\
      y_{\theta}(s) &=& G(s)\theta_c(s) \qquad (normalized\;filtered\;yaw\;command),\\
-     y_{f}(s) &=& G(s)f_c(s) \qquad (normalized\;filtered\;thust\;command).\\
+     y_{f}(s) &=& G(s)f_c(s) \qquad (normalized\;filtered\;thrust\;command).\\
 \f}
 
-For the angles, it would be reasonable to bound the angles to something like
-\f$\gamma_\phi = \gamma_\theta = 0.4\f$ [rad], and the yaw can be set much
+These signals are subsequently multiplied by a positive constant, defining the
+size of the interval on which the signals are defined. For the angles, it would
+be reasonable to bound the angles to something like
+\f$\gamma_\phi = \gamma_\theta = 0.3\f$ [rad], and the yaw can be set much
 larger, at something like \f$\gamma_\psi =2\pi\f$ [rad], and the force should be
 centered around the stable hovering force \f$\gamma_{f,1} = mg\f$ with the interval
 confined to something like \f$\gamma_{f,2} = mg/2\f$.
 
 \f{eqnarray*}{
      {\phi}(t) &=& \gamma_{\phi}y_{\phi}(t)\in[-\gamma_{\phi}, \gamma_{\phi}] \quad\qquad\qquad\qquad\qquad\qquad (filtered\;pitch\;command),\\
-     {\phi}(t) &=& \gamma_{\theta}y_{\theta}(t)\in[-\gamma_{\theta}, \gamma_{\theta}] \quad\;\;\qquad\qquad\qquad\qquad\qquad (filtered\;roll\;command),\\
-     {\theta}(t)) &=& \gamma_{\psi}y_{\psi}(t)\in[-\gamma_{\psi}, \gamma_{\psi}] \;\;\;\qquad\qquad\qquad\qquad\qquad (filtered\;yaw\;command),\\
-     {f}(t) &=& \gamma_{f,1} + \gamma_{f,2}y_f(t)\in[\gamma_{f,1}-\gamma_{f,2}  \gamma_{f,1}+\gamma_{f,2}] \qquad (filtered\;thust\;command).\\
+     {\theta}(t) &=& \gamma_{\theta}y_{\theta}(t)\in[-\gamma_{\theta}, \gamma_{\theta}] \quad\;\;\qquad\qquad\qquad\qquad\qquad (filtered\;roll\;command),\\
+     {\psi}(t) &=& \gamma_{\psi}y_{\psi}(t)\in[-\gamma_{\psi}, \gamma_{\psi}] \;\;\;\qquad\qquad\qquad\qquad\qquad (filtered\;yaw\;command),\\
+     {f}(t) &=& \gamma_{f,1} + \gamma_{f,2}y_f(t)\in[\gamma_{f,1}-\gamma_{f,2}  \gamma_{f,1}+\gamma_{f,2}] \qquad\;\qquad (filtered\;thust\;command).\\
 \f}
 
 The filtered commands are subsequently expanded into a feasible reference
@@ -460,8 +464,8 @@ generator can be used together with any of the attitude controller and the power
 distribution to close the loop from commanded inputs to generated PWM duty
 cycles.
 
-\image html example_reference_attitude_filtered.png "Normalized filtered commanded inputs" width=500px
-\image html example_reference_attitude_refs.png "Generated references based on the commanded inputs with the gamma-constants defining the signal intervals all set to 1" width=500px
+\image html reference_attitude_filtered.png "Normalized filtered commanded inputs" width=500px
+\image html reference_attitude_refs.png "Generated references based on the commanded inputs with the gamma-constants defining the signal intervals all set to 1" width=500px
 
 @page Tuning
 The tuning algorithms are currently implemented in Matlab, but will be migrated

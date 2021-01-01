@@ -13,11 +13,11 @@
 /***************************************************************************//**
 * @brief  Update using the robust full state feedback (FSF) on SO(3)
 *
-* This function takes the states of the reference dynamics in ''reference''
-* structure, as well sa the current states of the system in the "state"
+* This function takes the states of the reference dynamics in "reference"
+* structure, as well as the current states of the system in the "state"
 * structure, and the controller settings/memory in the "controller" structure,
 * and updates the torque fields in the controller, as well as the various
-* distances based on this information. The updateis done using the robust
+* distances based on this information. The update is done using the robust
 * feedback law defined with distances on SO(3).
 *
 * @param[in] reference - State of the reference dynamics

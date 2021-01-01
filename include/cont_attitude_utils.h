@@ -37,10 +37,12 @@ int assert_attitude_FSF_SU2(
 );
 
 /***************************************************************************//**
-* @brief Assert that the SO(3) controller is feasible
+* @brief Assert that the FSF allitude controller parameters are feaible
 *
 * Here, the maximum and minimum eigenvalues of the inertia matrx can potentially
-* be computed on tsartup if the inertia matrix is constant in time
+* be computed on startup if the inertia matrix is constant in time. This would
+* avoid the need for implementing an eigenvalue decomposition (currently done
+* by using LAPACK).
 *
 * @param[in] controller - State of the controller
 * @param[out] *minJ     - Output minimum eigenvalue of the inertia matrix

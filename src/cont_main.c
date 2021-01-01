@@ -77,8 +77,10 @@ void example_attitude_FSF(void){
     use any of the controllers below, but all are called for debugging purposes
     to check that there are no memory leaks                                   */
     assert(1==update_attitude_FSF_SO3_continuous(reference, state, controller));
+    assert(1==update_attitude_FSF_SO3_robust(reference, state, controller));
     assert(1==update_attitude_FSF_SU2_continuous(reference, state, controller));
     assert(1==update_attitude_FSF_SU2_discontinuous(reference, state, controller));
+    assert(1==update_attitude_FSF_SU2_robust(reference, state, controller));
 
     /* 4. Compute the desired thrust - now just setting the reference directly
     here the force could be projected so as to be constant in the z-direction if

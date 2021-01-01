@@ -8,71 +8,33 @@
 #include "cont_matrix_math.h"
 
 #if defined(LINK_LAPACK)
-/* load dgemm as an external function from LAPACK */
-extern void dgemm_(
-  char * transa,
-  char * transb,
-  int * m,
-  int * n,
-  int * k,
-  double * alpha,
-  double * A,
-  int * lda,
-  double * B,
-  int * ldb,
-  double * beta,
-  double * C,
-  int * ldc
-);
 
-/* load dpotrf as an external function from LAPACK */
-extern void dpotrf_(
-  char * uplo,
-  int * n,
-  double * A,
-  int * lda,
-  int * info
-);
+/* Load the necessary functions from LAPACK */
 
-/* load dposv as an external function from LAPACK */
-extern void dposv_(
-  char* uplo,
-  int* n,
-  int* nrhs,
-  double* a,
-  int* lda,
-  double* b,
-  int* ldb,
-  int* info
-);
+extern void dgemm_(char * transa, char * transb, int * m, int * n, int * k,
+                   double * alpha, double * A, int * lda, double * B, int * ldb,
+                   double * beta, double * C, int * ldc);
 
-/* load dsyev as an external function from LAPACK */
-extern void dsyev_(
-  char* jobz,
-  char* uplo,
-  int* n,
-  double* a,
-  int* lda,
-  double* w,
-  double* work,
-  int* lwork,
-  int* info
-);
+extern void dpotrf_(char * uplo, int * n, double * A, int * lda, int * info);
+
+extern void dposv_(char* uplo, int* n, int* nrhs, double* a, int* lda,
+                   double* b, int* ldb, int* info);
+
+extern void dsyev_(char* jobz, char* uplo, int* n, double* a, int* lda,
+                   double* w, double* work, int* lwork, int* info);
 #endif
 
 int matrix_double_addition(
   matrix_double_t *Amat,
   matrix_double_t *Bmat,
   matrix_double_t *Cmat
-  ) {
+){
   int i;
   /* Input data check */
   if ((Amat->numRows != Bmat->numRows) ||
       (Bmat->numRows != Cmat->numRows) ||
       (Amat->numCols != Bmat->numCols) ||
-      (Bmat->numCols != Cmat->numCols)){
-    return 0;
-  }
+      (Bmat->numCols != Cmat->numCols)) return 0;
   /* Perform matrix addition */
   for (i = 0; i < Amat->numRows*Amat->numCols; i++) Cmat->pData[i] = Amat->pData[i] + Bmat->pData[i];
   return 1;
@@ -81,13 +43,11 @@ int matrix_double_addition(
 int matrix_double_addition_inplace(
   matrix_double_t *Amat,
   matrix_double_t *Bmat
-  ) {
+){
   int i;
   /* Input data check */
   if ((Amat->numRows != Bmat->numRows) ||
-      (Amat->numCols != Bmat->numCols)){
-    return 0;
-  }
+      (Amat->numCols != Bmat->numCols)) return 0;
   /* Perform matrix addition */
   for (i = 0; i < Amat->numRows*Amat->numCols; i++) Amat->pData[i] += Bmat->pData[i];
   return 1;
@@ -97,15 +57,13 @@ int matrix_double_subtraction(
   matrix_double_t *Amat,
   matrix_double_t *Bmat,
   matrix_double_t *Cmat
-  ) {
+){
   int i;
   /* Input data check */
   if ((Amat->numRows != Bmat->numRows) ||
       (Bmat->numRows != Cmat->numRows) ||
       (Amat->numCols != Bmat->numCols) ||
-      (Bmat->numCols != Cmat->numCols)){
-    return 0;
-  }
+      (Bmat->numCols != Cmat->numCols)) return 0;
   /* Perform matrix addition */
   for (i = 0; i < Amat->numRows*Amat->numCols; i++) Cmat->pData[i] = Amat->pData[i] - Bmat->pData[i];
   return 1;
@@ -114,13 +72,11 @@ int matrix_double_subtraction(
 int matrix_double_subtraction_inplace(
   matrix_double_t *Amat,
   matrix_double_t *Bmat
-  ) {
+){
   int i;
   /* Input data check */
   if ((Amat->numRows != Bmat->numRows) ||
-      (Amat->numCols != Bmat->numCols)){
-    return 0;
-  }
+      (Amat->numCols != Bmat->numCols)) return 0;
   /* Perform matrix addition */
   for (i = 0; i < Amat->numRows*Amat->numCols; i++) Amat->pData[i] -= Bmat->pData[i];
   return 1;
@@ -136,12 +92,9 @@ int matrix_double_multiplication(
 #else
   int i, j, k;
 #endif
-
   if ((Amat->numRows != Cmat->numRows) ||
       (Bmat->numCols != Cmat->numCols) ||
-      (Amat->numCols != Bmat->numRows)){
-    return 0;
-  }
+      (Amat->numCols != Bmat->numRows)) return 0;
 #if defined(LINK_LAPACK)
   dgemm_(
     "N",
@@ -159,6 +112,7 @@ int matrix_double_multiplication(
     &Cmat->numRows
   );
 #else
+  /* TODO: Make this more efficient when not using LAPACK*/
   matrix_zero(Cmat);
   for (i = 0; i < Amat->numRows; i++ ){
     for (k = 0; k < Amat->numCols; k++ ){
@@ -174,12 +128,10 @@ int matrix_double_multiplication(
 int matrix_double_transposition(
   matrix_double_t *Amat,
   matrix_double_t *ATmat
-) {
+){
   int i, j;
   if ((Amat->numRows != ATmat->numCols) ||
-      (Amat->numCols != ATmat->numRows)){
-    return 0;
-  }
+      (Amat->numCols != ATmat->numRows)) return 0;
   for (i = 0; i < Amat->numRows; i++ ){
     for (j = 0; j < Amat->numCols; j++ ){
       ATmat->pData[i*Amat->numCols + j] = Amat->pData[j*Amat->numRows + i];
@@ -188,62 +140,14 @@ int matrix_double_transposition(
   return 1;
 }
 
-int matrix_double_cholesky_inplace(
-  matrix_double_t *Amat
-) {
-#if defined(LINK_LAPACK)
-  int i, j;
-#endif
-  int info = 0;
-  if ( Amat->numRows != Amat->numCols ) return 0;
-
-#if defined(LINK_LAPACK)
-  dpotrf_(
-    "L",
-    &Amat->numRows,
-    Amat->pData,
-    &Amat->numRows,
-    &info
-  );
-  for (i = 0; i < Amat->numRows; i++ ){
-    for (j = i + 1; j < Amat->numRows; j++ ) Amat->pData[i + j * Amat->numRows] = 0.0;
-  }
-#else
-  TRACE(5,("The in-place cholesky decomposition has not yet been implemented dependency free", info));
-#endif
-  if (0 == info){
-    return 1;
-  } else {
-    if (0 < info) TRACE(5,("The %i-th argument in dpotrf had an illegal value\n", -info));
-    if (0 > info) TRACE(5,("The leading minor of order %i is not positive definite\n", info));
-    return 0;
-  }
-}
-
-int matrix_double_cholesky(
-  matrix_double_t *Amat,
-  matrix_double_t *Lmat
-) {
-  int i, status;
-  if ((Amat->numRows != Lmat->numRows) ||
-      (Amat->numCols != Lmat->numCols)){
-    return 0;
-  }
-  for (i = 0; i < Amat->numRows * Amat->numCols; i++) Lmat->pData[i] = Amat->pData[i];
-  status = matrix_double_cholesky_inplace(Lmat);
-  return status;
-}
-
 int matrix_double_solve_posdef(
   matrix_double_t *Amat,
   matrix_double_t *Bmat
-) {
+){
   int info = 0;
   if ((Amat->numRows != Amat->numCols) ||
       (Amat->numRows != Bmat->numRows) ||
-      (Bmat->numCols < 1)){
-    return 0;
-  }
+      (Bmat->numCols < 1)) return 0;
 
 #if defined(LINK_LAPACK)
   dposv_(
@@ -356,12 +260,6 @@ void mat_mul(matrix_double_t *Amat, matrix_double_t *Bmat, matrix_double_t *Cmat
 
 void mat_trans(matrix_double_t *Amat, matrix_double_t *ATmat)
 { assert(1 == matrix_double_transposition(Amat, ATmat)); }
-
-void mat_chol(matrix_double_t *Amat, matrix_double_t *Lmat)
-{ assert(1 == matrix_double_cholesky(Amat, Lmat)); }
-
-void mat_chol_inplace(matrix_double_t *Amat)
-{ assert(1 == matrix_double_cholesky_inplace(Amat)); }
 
 void mat_sol(matrix_double_t *Amat, matrix_double_t *Bmat)
 { assert(1 == matrix_double_solve_posdef(Amat, Bmat)); }

@@ -290,11 +290,11 @@ function solution_analysis(
 
     if 1 in showPlot
         pqqr = plot( t, q',    color=:black, linewidth=2, xaxis="Time (t)",yaxis="Attitude [.]",          label=[L"q(t)" nothing nothing nothing])
-               plot!(t, qr',   color=:red,   linewidth=2, xaxis="Time (t)",yaxis="Attitude [.]",          label=[L"q_r(t)" nothing nothing nothing])
+               plot!(t, qr',   color=:blue,  linewidth=2, xaxis="Time (t)",yaxis="Attitude [.]",          label=[L"q_r(t)" nothing nothing nothing])
         pwwr = plot( t, w',    color=:black, linewidth=2, xaxis="Time (t)",yaxis="Attitude rate [rad/s]", label=[L"\omega(t)" nothing nothing])
-               plot!(t, wr',   color=:red,   linewidth=2, xaxis="Time (t)",yaxis="Attitude rate [rad/s]", label=[L"\omega_{r}(t)" nothing nothing])
+               plot!(t, wr',   color=:blue,  linewidth=2, xaxis="Time (t)",yaxis="Attitude rate [rad/s]", label=[L"\omega_{r}(t)" nothing nothing])
         pttr = plot( t, tau',  color=:black, linewidth=2, xaxis="Time (t)",yaxis="Torque [Nm]",           label=[L"\tau(t)" nothing nothing])
-               plot!(t, taur', color=:red,   linewidth=2, xaxis="Time (t)",yaxis="Torque [Nm]",           label=[L"\tau_{r}(t)" nothing nothing])
+               plot!(t, taur', color=:blue,  linewidth=2, xaxis="Time (t)",yaxis="Torque [Nm]",           label=[L"\tau_{r}(t)" nothing nothing])
         pdis = plot( t, dist', color=:black, linewidth=2, xaxis="Time (t)",yaxis="Load disturbance [Nm]", label=[L"d(t)" nothing nothing])
 
         if showDisturbance
@@ -313,8 +313,8 @@ function solution_analysis(
 
         attitudeErrors = [L"e_{R}(t)", L"e_{R}(t)", L"e_{X}(t)", L"e_{X}^{\pm}(t)", L"e_{X}(t)"]
         plotattd    = plot( t, psi',        color=:black,             linewidth=2,                            label=L"\Psi(R_r(t), R(t))")
-                      plot!(t, gamma',      color=:red,               linewidth=2,                            label=L"\Gamma(X_r(t), X(t))")
-                      plot!(t, 2 .- gamma', color=:red,  style=:dash, linewidth=2, yaxis="Attitude distance", label=L"\bar{\Gamma}(X_r(t), X(t))")
+                      plot!(t, gamma',      color=:blue,               linewidth=2,                            label=L"\Gamma(X_r(t), X(t))")
+                      plot!(t, 2 .- gamma', color=:blue,  style=:dash, linewidth=2, yaxis="Attitude distance", label=L"\bar{\Gamma}(X_r(t), X(t))")
         plotatterr  = plot( t, eAtt', color=:black, linewidth=2,                   yaxis="Attitude error",    label=[attitudeErrors[controllerType] nothing nothing])
         plotrateerr = plot( t, eW',   color=:black, linewidth=2, xaxis="Time (t)", yaxis="Rate error",        label=[L"e_{\omega}(t)" nothing nothing])
         plot(plotattd, plotatterr,  plotrateerr, layout=(3,1), size=(1000,750))
@@ -328,7 +328,7 @@ function solution_analysis(
         ubstyle    = :dash;
         lbstyle    = :dot;
         sigcolor   = :black;
-        boundcolor = :red;
+        boundcolor = :blue;
         boundalpha = 0.1;
         fillcolor  = :black;
 

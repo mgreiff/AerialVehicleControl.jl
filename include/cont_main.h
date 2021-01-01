@@ -17,10 +17,22 @@
 #include "cont_attitude_FSF_SU2_robust.h"
 #include "cont_attitude_FOF_SO3_continuous.h"
 
-int main();
+/***************************************************************************//**
+* @brief Main program, facilitating memory checks and analysis of the code
+*
+* This function calls the two attitude examples, in order to check that all
+* of the controllers run and to test their performance and memory usage.
+*******************************************************************************/
+int main(int argc, char *argv[]);
 
+/***************************************************************************//**
+* @brief Example of how the attitude FSF controllers can be implemented
+*******************************************************************************/
 void example_attitude_FSF(void);
 
+/***************************************************************************//**
+* @brief Example of how the attitude FOF controllers can be implemented
+*******************************************************************************/
 void example_attitude_FOF(void);
 
 #endif /* __CONT_MAIN_H__ */

@@ -11,7 +11,7 @@
 #include "cont_types.h"
 
 /***************************************************************************//**
-* @brief Matrix addition, A + B = C
+* @brief Matrix addition, C <-- A + B
 *******************************************************************************/
 int matrix_double_addition(
   matrix_double_t *Amat,
@@ -20,12 +20,28 @@ int matrix_double_addition(
 );
 
 /***************************************************************************//**
-* @brief Matrix subtraction, A - B = C
+* @brief In-place matrix addition, A <-- A + B
+*******************************************************************************/
+int matrix_double_addition_inplace(
+  matrix_double_t *Amat,
+  matrix_double_t *Bmat
+);
+
+/***************************************************************************//**
+* @brief Matrix subtraction, C <-- A - B
 *******************************************************************************/
 int matrix_double_subtraction(
   matrix_double_t *Amat,
   matrix_double_t *Bmat,
   matrix_double_t *Cmat
+);
+
+/***************************************************************************//**
+* @brief In-place matrix subtraction, A <-- A - B
+*******************************************************************************/
+int matrix_double_subtraction_inplace(
+  matrix_double_t *Amat,
+  matrix_double_t *Bmat
 );
 
 /***************************************************************************//**
@@ -43,21 +59,6 @@ int matrix_double_multiplication(
 int matrix_double_transposition(
   matrix_double_t *Amat,
   matrix_double_t *ATmat
-);
-
-/***************************************************************************//**
-* @brief Inplace cholesky decomposition A = L * L^T, writes over A with L
-*******************************************************************************/
-int matrix_double_cholesky_inplace(
-  matrix_double_t *Amat
-);
-
-/***************************************************************************//**
-* @brief Inplace cholesky decomposition A = L * L^T, writes L to Lmat
-*******************************************************************************/
-int matrix_double_cholesky(
-  matrix_double_t *Amat,
-  matrix_double_t *Lmat
 );
 
 /***************************************************************************//**
@@ -86,8 +87,6 @@ void mat_sub(matrix_double_t *Amat, matrix_double_t *Bmat, matrix_double_t *Cmat
 void mat_sub_inplace(matrix_double_t *Amat, matrix_double_t *Bmat);
 void mat_mul(matrix_double_t *Amat, matrix_double_t *Bmat, matrix_double_t *Cmat);
 void mat_trans(matrix_double_t *Amat, matrix_double_t *ATmat);
-void mat_chol(matrix_double_t *Amat, matrix_double_t *Lmat);
-void mat_chol_inplace(matrix_double_t *Amat);
 void mat_sol(matrix_double_t *Amat, matrix_double_t *Bmat);
 void mat_eigvals(matrix_double_t *Amat, matrix_double_t *Bmat);
 

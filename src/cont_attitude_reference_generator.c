@@ -109,6 +109,7 @@ int update_attitude_references(
   return 1;
 }
 
+/** \cond INTERNAL */
 /* TODO refactor this */
 int cont_SU2_triple_derivatives(
   matrix_double_t * in,
@@ -166,3 +167,4 @@ int cont_get_cossin(matrix_double_t * input, int deriv, double * ca, double * sa
   }
   return 1;
 }
+/** \endcond */

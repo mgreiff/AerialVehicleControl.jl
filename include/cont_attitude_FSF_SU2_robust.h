@@ -13,12 +13,12 @@
 /***************************************************************************//**
 * @brief  Update using the continuous full state feedback (FSF) on SU(2)
 *
-* This function takes the states of the reference dynamics in ''reference''
-* structure, as well sa the current states of the system in the "state"
+* This function takes the states of the reference dynamics in "reference"
+* structure, as well as the current states of the system in the "state"
 * structure, and the controller settings/memory in the "controller" structure,
 * and updates the torque fields in the controller, as well as the various
-* distances based on this information. The updateis done using the continuous
-* feedback law n SU(2).
+* distances based on this information. The update is done using the robust
+* feedback law on SU(2).
 *
 * @param[in] reference - State of the reference dynamics
 * @param[in] state - State of the system dynamics

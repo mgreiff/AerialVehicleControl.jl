@@ -30,7 +30,6 @@
 * @brief Custom debug print function
 *******************************************************************************/
 void dbg_printf(const char *fmt, ...);
-/** \endcond */
 
 /***************************************************************************//**
 * @brief Trace print macro - can output both to console and file
@@ -42,10 +41,15 @@ if (level <= TRACE_LEVEL) {\
 if (1 == TRACE_LINES) {\
 fprintf(stderr, "\033[0;34m--- %s - %d ---\033[0m\n", __FILE__, __LINE__);\
 } dbg_printf x;}} while (0)
-
+/** \endcond */
 
 /***************************************************************************//**
 * @brief Matrix object used for all matrix manipulation
+*
+* Any library, be it CMSIS, LAPACK or something else can be used provided an
+* an interface is provided such that the relevant library functions can be
+* called with the matrix_double_t as an input argument.
+*
 *******************************************************************************/
 typedef struct matrix_double_s {
   int numRows;          /**< Number of columns                                */
@@ -54,7 +58,7 @@ typedef struct matrix_double_s {
 } matrix_double_t;
 
 /***************************************************************************//**
-* @brief Dynamical states assumed known in the attitude FSF on S(3) or SU(2)
+* @brief Dynamical states, assumed known in the attitude FSF on SO(3) or SU(2)
 *******************************************************************************/
 typedef struct dyn_state_qw_s {
   double quaternion[4]; /**< Quaternion attitude                              */
