@@ -21,7 +21,6 @@ for any given aerial vehicle control problem.
 * @ref Installation
 * @ref Testing
 * @ref Examples
-* @ref Tuning
 
 ### Implemented controllers
 The library consists of several controllers, distinguished by begin either

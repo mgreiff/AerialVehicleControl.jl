@@ -144,31 +144,31 @@ void matrix_set( matrix_double_t *mat, int row, int column, double value );
 
 /***************************************************************************//**
 * @brief Set all antries of a matrix to zero
-* @param[in] mat - Input matrix
+* @param[in] matrix - Input matrix
 *******************************************************************************/
 void matrix_zero( matrix_double_t *matrix );
 
 /***************************************************************************//**
 * @brief Set a square matrix to the identity matrix
-* @param[in] mat - Input matrix
+* @param[in] matrix - Input matrix
 *******************************************************************************/
 void matrix_identity( matrix_double_t *matrix );
 
 /***************************************************************************//**
 * @brief Allocate memory for a matrix struct of given dimensions
 *
-* @param[in] mat - Input matrix
-* @param[in] row - The row index
-* @param[in] column - The column index
+* @param[in] matrix - Input matrix
+* @param[in] numRows - The number of rows
+* @param[in] numCols - The number of columns
 *******************************************************************************/
 void matrix_allocate( matrix_double_t *matrix, int numRows, int numCols );
 
 /***************************************************************************//**
 * @brief Define a matrix to use already allocated memory
 *
-* @param[in] mat - Input matrix
-* @param[in] row - The row index
-* @param[in] column - The column index
+* @param[in] matrix - Input matrix
+* @param[in] numRows - The number of rows
+* @param[in] numCols - The number of columns
 * @param[in] data - Pointer to already allocated memory
 *******************************************************************************/
 void matrix_define( matrix_double_t *matrix, int numRows, int numCols, double *data );
